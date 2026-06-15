@@ -61,7 +61,7 @@ import kotlin.math.sin
  * 事件散点图、噪音曲线、睡眠分布饼图与事件列表。
  */
 @Composable
-fun SleepReportCard(session: SleepSession, modifier: Modifier = Modifier) {
+fun SleepReportCard(session: SleepSession, modifier: Modifier = Modifier, isSample: Boolean = false) {
     val distribution = session.sleepDistribution
 
     Column(
@@ -71,6 +71,17 @@ fun SleepReportCard(session: SleepSession, modifier: Modifier = Modifier) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        if (isSample) {
+            Text(
+                text = "示例报告 · 开始睡眠监测后将生成你的专属报告",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(50))
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+            )
+        }
+
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
                 text = "睡眠报告",
@@ -132,6 +143,12 @@ fun SleepReportCard(session: SleepSession, modifier: Modifier = Modifier) {
                 EventRow(event = event)
             }
         }
+
+        Text(
+            text = "本应用仅提供睡眠数据记录与参考分析，不提供医疗诊断、治疗或健康评估服务。如有健康问题请咨询专业医生。",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

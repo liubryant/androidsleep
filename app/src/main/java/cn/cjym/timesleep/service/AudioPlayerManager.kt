@@ -1,7 +1,9 @@
 package cn.cjym.timesleep.service
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
+import androidx.core.content.ContextCompat
 import cn.cjym.timesleep.AppConstants
 import cn.cjym.timesleep.data.model.SoundScene
 import kotlinx.coroutines.CoroutineScope
@@ -64,6 +66,7 @@ object AudioPlayerManager {
     fun resume() {
         mediaPlayer?.start()
         _nowPlaying.update { it?.copy(isPlaying = true) }
+        startPlaybackService()
     }
 
     fun stop() {
@@ -102,6 +105,7 @@ object AudioPlayerManager {
         withContext(Dispatchers.Main) {
             releasePlayer()
             _nowPlaying.value = NowPlaying(scene = scene, isPlaying = false, sleepTimerText = sleepTimerText)
+            startPlaybackService()
         }
 
         val source = runCatching { resolveSource(scene) }.getOrNull()
@@ -198,6 +202,11 @@ object AudioPlayerManager {
         } finally {
             _downloadProgress.update { it - scene.id }
         }
+    }
+
+    /** 启动播放前台服务，使锁屏与通知栏展示当前播放状态。 */
+    private fun startPlaybackService() {
+        ContextCompat.startForegroundService(appContext, Intent(appContext, AudioPlayerService::class.java))
     }
 
     private fun releasePlayer() {

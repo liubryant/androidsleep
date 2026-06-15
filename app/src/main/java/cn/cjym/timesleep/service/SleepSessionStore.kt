@@ -50,6 +50,15 @@ object SleepSessionStore {
         return result.take(maxSessionCount)
     }
 
+    /** 从会话列表中移除指定会话（例如睡眠时长不足，不生成报告时）。 */
+    fun remove(session: SleepSession, from: List<SleepSession>): List<SleepSession> =
+        from.filterNot { it.id == session.id }
+
+    /** 删除指定的录音文件。 */
+    fun deleteRecording(context: Context, fileName: String) {
+        File(recordingDirectory(context), fileName).delete()
+    }
+
     fun recordingFile(context: Context, fileName: String): File = File(recordingDirectory(context), fileName)
 
     fun makeRecordingFile(context: Context, sessionId: String): File {

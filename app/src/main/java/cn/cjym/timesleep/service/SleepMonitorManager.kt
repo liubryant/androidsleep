@@ -40,6 +40,9 @@ object SleepMonitorManager {
     private const val MAX_NOISE_SAMPLES = 720
     private const val PERSIST_INTERVAL_MS = 30_000L
 
+    /** 睡眠时长不超过该阈值时，不生成睡眠报告。 */
+    private const val MINIMUM_REPORT_DURATION_MS = 2 * 60 * 60 * 1_000L
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val classifier: SoundClassifying = FeatureBasedSleepSoundClassifier()
 
@@ -143,8 +146,16 @@ object SleepMonitorManager {
         val session = _currentSession.value
         if (session != null) {
             val finished = session.copy(endTime = System.currentTimeMillis())
-            _latestSession.value = finished
-            _sessions.value = SleepSessionStore.upsert(finished, _sessions.value)
+            val durationMs = finished.endTime!! - finished.startTime
+            if (durationMs > MINIMUM_REPORT_DURATION_MS) {
+                _latestSession.value = finished
+                _sessions.value = SleepSessionStore.upsert(finished, _sessions.value)
+            } else {
+                // 睡眠时长不超过 2 小时，不生成睡眠报告，丢弃本次记录与录音。
+                _sessions.value = SleepSessionStore.remove(finished, _sessions.value)
+                finished.audioFileName?.let { SleepSessionStore.deleteRecording(appContext, it) }
+                _latestSession.value = _sessions.value.firstOrNull()
+            }
             persistSessions(force = true)
         }
         _currentSession.value = null

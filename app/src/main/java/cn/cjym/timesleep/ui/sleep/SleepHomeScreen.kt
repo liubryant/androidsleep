@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cn.cjym.timesleep.data.model.SampleSleepSession
 import cn.cjym.timesleep.data.model.SleepEventType
 import cn.cjym.timesleep.data.model.SleepSession
 import cn.cjym.timesleep.data.model.SleepTrendCalculator
@@ -137,7 +138,7 @@ fun SleepHomeScreen(modifier: Modifier = Modifier) {
                 if (latestSession != null) {
                     SleepReportCard(session = latestSession!!)
                 } else {
-                    EmptyReportPlaceholder()
+                    SleepReportCard(session = SampleSleepSession.instance, isSample = true)
                 }
 
                 if (sessions.isNotEmpty()) {
@@ -380,17 +381,6 @@ private fun averageScoreText(points: List<SleepTrendPoint>): String {
     if (scored.isEmpty()) return "--"
     val average = scored.sumOf { it.score } / scored.size
     return "${average.roundToInt()} 分"
-}
-
-@Composable
-private fun EmptyReportPlaceholder() {
-    Box(modifier = Modifier.padding(vertical = 32.dp)) {
-        EmptyState(
-            title = "还没有睡眠报告",
-            message = "点击开始睡眠后，应用会记录夜间声音事件。",
-            icon = Icons.Filled.Bedtime,
-        )
-    }
 }
 
 @Composable

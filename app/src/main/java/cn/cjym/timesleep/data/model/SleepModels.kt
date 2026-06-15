@@ -7,6 +7,7 @@ import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 @Serializable
 enum class SleepEventType {
@@ -244,6 +245,44 @@ data class SleepTrendPoint(
     val bruxismCount: Int,
     val averageNoise: Double,
 )
+
+/**
+ * 当用户还没有任何睡眠记录时，用于展示的示例「优秀」睡眠报告。
+ * 数据经过设计，呈现 8 小时睡眠、低噪音环境与较少干扰事件下的详细分析效果，
+ * 对应 iOS `SleepSession.sample`。
+ */
+object SampleSleepSession {
+    val instance: SleepSession
+        get() {
+            val endTime = System.currentTimeMillis()
+            val startTime = endTime - 8L * 3_600 * 1_000
+
+            val noiseSamples = (0 until 480).map { minute ->
+                val t = minute.toDouble()
+                val decibel = 31 +
+                    5 * sin(2 * Math.PI * t / 90) +
+                    1.5 * sin(2 * Math.PI * t / 23)
+                NoiseSample(time = startTime + minute * 60_000L, decibel = decibel)
+            }.toMutableList()
+
+            fun eventTime(minute: Double) = startTime + (minute * 60_000).toLong()
+
+            val events = mutableListOf(
+                SleepEvent(type = SleepEventType.cough, startTime = eventTime(46.0), endTime = eventTime(46.0) + 2_000, confidence = 0.86, peakDecibel = 41.0),
+                SleepEvent(type = SleepEventType.snore, startTime = eventTime(132.0), endTime = eventTime(132.0) + 6_000, confidence = 0.78, peakDecibel = 38.0),
+                SleepEvent(type = SleepEventType.sleepTalk, startTime = eventTime(214.0), endTime = eventTime(214.0) + 4_000, confidence = 0.81, peakDecibel = 40.0),
+                SleepEvent(type = SleepEventType.sleepTalk, startTime = eventTime(362.0), endTime = eventTime(362.0) + 3_000, confidence = 0.83, peakDecibel = 39.0),
+            )
+
+            return SleepSession(
+                startTime = startTime,
+                endTime = endTime,
+                events = events,
+                noiseSamples = noiseSamples,
+                audioFileName = null,
+            )
+        }
+}
 
 object SleepTrendCalculator {
     fun points(sessions: List<SleepSession>, range: SleepTrendRange): List<SleepTrendPoint> {
