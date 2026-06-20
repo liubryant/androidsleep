@@ -40,6 +40,14 @@ class AppSettings(private val context: Context) {
         }
     }
 
+    /** 注销账号后清除登录态与手机号，对应 iOS `AppSettings.clearAccountData()`。 */
+    suspend fun clearAccountData() {
+        context.settingsDataStore.edit { prefs ->
+            prefs[Keys.isLoggedIn] = false
+            prefs[Keys.phoneNumber] = ""
+        }
+    }
+
     suspend fun acceptAgreement() {
         context.settingsDataStore.edit { prefs ->
             prefs[Keys.agreementAccepted] = true

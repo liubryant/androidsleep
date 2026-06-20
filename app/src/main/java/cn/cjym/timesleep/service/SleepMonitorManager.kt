@@ -76,6 +76,9 @@ object SleepMonitorManager {
     private val _permissionDenied = MutableStateFlow(false)
     val permissionDenied: StateFlow<Boolean> = _permissionDenied.asStateFlow()
 
+    private val _reportTooShort = MutableStateFlow(false)
+    val reportTooShort: StateFlow<Boolean> = _reportTooShort.asStateFlow()
+
     fun init(context: Context) {
         if (initialized) return
         initialized = true
@@ -112,6 +115,10 @@ object SleepMonitorManager {
 
     fun dismissPermissionAlert() {
         _permissionDenied.value = false
+    }
+
+    fun dismissReportTooShortAlert() {
+        _reportTooShort.value = false
     }
 
     /** 清除所有已保存的睡眠报告、事件数据和录音文件。 */
@@ -155,6 +162,7 @@ object SleepMonitorManager {
                 _sessions.value = SleepSessionStore.remove(finished, _sessions.value)
                 finished.audioFileName?.let { SleepSessionStore.deleteRecording(appContext, it) }
                 _latestSession.value = _sessions.value.firstOrNull()
+                _reportTooShort.value = true
             }
             persistSessions(force = true)
         }

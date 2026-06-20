@@ -87,6 +87,7 @@ fun SleepHomeScreen(modifier: Modifier = Modifier) {
     val sessions by SleepMonitorManager.sessions.collectAsState()
     val currentDecibel by SleepMonitorManager.currentDecibel.collectAsState()
     val permissionDenied by SleepMonitorManager.permissionDenied.collectAsState()
+    val reportTooShort by SleepMonitorManager.reportTooShort.collectAsState()
     val isHealthAuthorized by HealthConnectManager.isAuthorized.collectAsState()
 
     var trendRange by remember { mutableStateOf(SleepTrendRange.week) }
@@ -162,6 +163,19 @@ fun SleepHomeScreen(modifier: Modifier = Modifier) {
             },
             title = { Text("需要麦克风权限") },
             text = { Text("请在系统设置中允许麦克风访问，才能进行睡眠声音监测。") },
+        )
+    }
+
+    if (reportTooShort) {
+        AlertDialog(
+            onDismissRequest = { SleepMonitorManager.dismissReportTooShortAlert() },
+            confirmButton = {
+                TextButton(onClick = { SleepMonitorManager.dismissReportTooShortAlert() }) {
+                    Text("知道了")
+                }
+            },
+            title = { Text("未生成睡眠报告") },
+            text = { Text("本次睡眠时长不足 2 小时，不会生成睡眠报告。") },
         )
     }
 }

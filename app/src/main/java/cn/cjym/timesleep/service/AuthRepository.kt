@@ -22,6 +22,9 @@ sealed class AuthException(message: String) : Exception(message) {
 data class AppUserLoginResult(val phone: String, val newUser: Boolean)
 
 @Serializable
+private class EmptyData
+
+@Serializable
 private data class ApiResponse<T>(val code: Int, val msg: String, val data: T? = null)
 
 @Serializable
@@ -62,6 +65,12 @@ object AuthRepository {
         val response = post<AppUserLoginResult>("im/bot/set-password", mapOf("phone" to phone, "code" to code, "password" to password))
         if (response.code != 0 || response.data == null) throw AuthException.Server(response.msg)
         return response.data
+    }
+
+    /** 验证短信验证码后注销账号，后台将永久删除账号及关联数据。 */
+    suspend fun deleteAccount(phone: String, code: String) {
+        val response = post<EmptyData>("im/bot/remove_account", mapOf("phone" to phone, "code" to code))
+        if (response.code != 0) throw AuthException.Server(response.msg)
     }
 
     /** 登录时上报的设备信息：手机型号、Android 版本、App 名称。 */

@@ -13,7 +13,7 @@ object AppConstants {
     var isAdDisabled = true
 
     // 友盟
-    const val UMENG_APP_KEY = "6a2e04816f259537c7b8b474"
+    const val UMENG_APP_KEY = "6a302ff56f259537c7b9b9ee"
     const val UMENG_CHANNEL = "Android"
 }
 

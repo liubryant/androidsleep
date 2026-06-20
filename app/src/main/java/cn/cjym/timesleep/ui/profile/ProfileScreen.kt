@@ -76,6 +76,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
             ProfileHomeScreen(
                 onLogin = { navController.navigate("login") },
                 onSetPassword = { navController.navigate("set_password") },
+                onDeleteAccount = { navController.navigate("delete_account") },
                 onLegal = { type -> navController.navigate("legal/$type") },
             )
         }
@@ -84,6 +85,12 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
         }
         composable("set_password") {
             SetPasswordScreen(onBack = { navController.popBackStack() })
+        }
+        composable("delete_account") {
+            AccountDeletionScreen(
+                onBack = { navController.popBackStack() },
+                onDeleted = { navController.popBackStack("home", inclusive = false) },
+            )
         }
         composable("legal/{type}") { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "agreement"
@@ -96,6 +103,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 private fun ProfileHomeScreen(
     onLogin: () -> Unit,
     onSetPassword: () -> Unit,
+    onDeleteAccount: () -> Unit,
     onLegal: (String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -198,6 +206,12 @@ private fun ProfileHomeScreen(
                 Icon(imageVector = Icons.Filled.Delete, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("清除数据")
+            }
+        }
+
+        if (isLoggedIn) {
+            ProfileSection(title = "账号与安全") {
+                LinkRow(label = "注销账号", onClick = onDeleteAccount, labelColor = MaterialTheme.colorScheme.error)
             }
         }
 
@@ -344,7 +358,7 @@ private fun InfoRow(icon: ImageVector?, label: String, value: String, valueColor
 }
 
 @Composable
-private fun LinkRow(label: String, onClick: () -> Unit) {
+private fun LinkRow(label: String, onClick: () -> Unit, labelColor: Color = Color.Unspecified) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -352,7 +366,7 @@ private fun LinkRow(label: String, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
     ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+        Text(text = label, style = MaterialTheme.typography.bodyMedium, color = labelColor, modifier = Modifier.weight(1f))
         Icon(
             imageVector = Icons.Filled.ChevronRight,
             contentDescription = null,

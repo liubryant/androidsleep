@@ -1,6 +1,5 @@
 package cn.cjym.timesleep.ui.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,13 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.R
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.AuthRepository
+import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -99,8 +98,8 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(22.dp),
         ) {
-            Image(
-                painter = painterResource(id = R.mipmap.ic_launcher),
+            AsyncImage(
+                model = "android.resource://${context.packageName}/${R.mipmap.ic_launcher}",
                 contentDescription = null,
                 modifier = Modifier
                     .size(72.dp)

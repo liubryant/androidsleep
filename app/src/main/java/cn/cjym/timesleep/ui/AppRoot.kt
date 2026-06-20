@@ -39,24 +39,29 @@ import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.LegalLinks
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.AppSDKManager
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @Composable
 fun AppRoot() {
     val context = LocalContext.current
     val app = context.applicationContext as TimeSleepApp
-    val agreementAccepted by app.settings.agreementAccepted.collectAsState(initial = false)
+    // DataStore 是异步读取的，初始值用 null 表示"尚未加载"，避免在真实值到达前
+    // 先把协议弹窗渲染出来又立刻切换到首页（一闪而过）。
+    val agreementAccepted by remember(app) {
+        app.settings.agreementAccepted.map<Boolean, Boolean?> { it }
+    }.collectAsState(initial = null)
 
     LaunchedEffect(agreementAccepted) {
-        if (agreementAccepted) {
-            AppSDKManager.startIfAllowed(agreementAccepted = true)
+        if (agreementAccepted == true) {
+            AppSDKManager.startIfAllowed(context = context.applicationContext, agreementAccepted = true)
         }
     }
 
-    if (agreementAccepted) {
-        MainTabScreen()
-    } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+    when (agreementAccepted) {
+        null -> Unit
+        true -> MainTabScreen()
+        false -> Box(modifier = Modifier.fillMaxSize()) {
             PrivacyAgreementDialog()
         }
     }
