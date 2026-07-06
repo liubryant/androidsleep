@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
@@ -11,20 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -49,14 +49,13 @@ import kotlinx.coroutines.launch
 private enum class LoginMode { Code, Password }
 
 /** 登录 / 注册页面，对应 iOS `LoginView`：手机号 + 验证码或密码登录。 */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val app = context.applicationContext as TimeSleepApp
     val scope = rememberCoroutineScope()
 
-    var mode by remember { mutableStateOf(LoginMode.Code) }
+    var mode by remember { mutableStateOf(LoginMode.Password) }
     var phone by remember { mutableStateOf("") }
     var code by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -78,16 +77,7 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("登录") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
-                    }
-                },
-            )
-        },
+        topBar = { ProfileTopBar(title = "登录", onBack = onBack) },
         modifier = modifier,
     ) { innerPadding ->
         Column(
@@ -112,27 +102,24 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     text = "同步你的睡眠报告、收藏声音和监测设置",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
                 )
             }
 
-            OutlinedTextField(
+            LoginTextField(
                 value = phone,
                 onValueChange = { value -> phone = value.filter { it.isDigit() }.take(11) },
-                label = { Text("手机号") },
                 placeholder = { Text("请输入手机号") },
-                singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),
             )
 
             if (mode == LoginMode.Code) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
+                    LoginTextField(
                         value = code,
                         onValueChange = { value -> code = value.filter { it.isDigit() }.take(6) },
-                        label = { Text("验证码") },
                         placeholder = { Text("请输入验证码") },
-                        singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                         modifier = Modifier.weight(1f),
                     )
@@ -164,12 +151,10 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     }
                 }
             } else {
-                OutlinedTextField(
+                LoginTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("密码") },
                     placeholder = { Text("请输入密码") },
-                    singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
@@ -222,7 +207,37 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 text = "继续即表示你同意用户协议和隐私政策。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
             )
         }
     }
+}
+
+@Composable
+private fun LoginTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        shape = RoundedCornerShape(8.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f),
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f),
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+        ),
+        modifier = modifier,
+    )
 }

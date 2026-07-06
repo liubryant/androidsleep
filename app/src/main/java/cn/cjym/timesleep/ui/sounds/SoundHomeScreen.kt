@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.sounds
 
 import androidx.compose.foundation.Image
@@ -13,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -51,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.R
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.AudioPlayerManager
+import cn.cjym.timesleep.service.StoryPlayerManager
 import cn.cjym.timesleep.ui.shared.EmptyState
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -65,6 +69,7 @@ fun SoundHomeScreen(modifier: Modifier = Modifier) {
     val scenes by library.scenes.collectAsState()
     val favorites by library.favorites.collectAsState(initial = emptySet())
     val nowPlaying by AudioPlayerManager.nowPlaying.collectAsState()
+    val storyPlaying by StoryPlayerManager.nowPlaying.collectAsState()
 
     var searchText by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(SoundCategory.RECOMMENDED) }
@@ -92,7 +97,7 @@ fun SoundHomeScreen(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(scenes.size) {
-        if (!didAutoPlay && nowPlaying == null && displayedScenes.isNotEmpty()) {
+        if (!didAutoPlay && nowPlaying == null && storyPlaying == null && displayedScenes.isNotEmpty()) {
             didAutoPlay = true
             AudioPlayerManager.toggle(displayedScenes.first())
         }
@@ -139,7 +144,7 @@ fun SoundHomeScreen(modifier: Modifier = Modifier) {
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        displayedScenes.chunked(4).forEach { group ->
+                        displayedScenes.chunked(6).forEach { group ->
                             items(group, key = { it.id }) { scene ->
                                 SoundCard(
                                     scene = scene,
@@ -148,11 +153,6 @@ fun SoundHomeScreen(modifier: Modifier = Modifier) {
                                         scope.launch { library.toggleFavorite(scene) }
                                     },
                                 )
-                            }
-                            if (group.size == 4) {
-                                item(span = { GridItemSpan(maxLineSpan) }) {
-                                    DrawFeedAdCard()
-                                }
                             }
                         }
                     }
@@ -288,7 +288,7 @@ private fun SoundCategoryBar(selectedCategory: SoundCategory, onSelect: (SoundCa
                     Text(
                         text = category.title,
                         style = if (selected) MaterialTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold) else MaterialTheme.typography.bodyMedium,
-                        color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                        color = if (selected) androidx.compose.ui.graphics.Color.White else MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Clip,
                     )

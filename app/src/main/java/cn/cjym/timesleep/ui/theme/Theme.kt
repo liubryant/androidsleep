@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,7 +12,7 @@ import androidx.compose.runtime.Composable
 
 private val LightColors = lightColorScheme(
     primary = Indigo,
-    onPrimary = LightSurface,
+    onPrimary = DarkBackground,
     secondary = IndigoLight,
     background = LightBackground,
     surface = LightSurface,

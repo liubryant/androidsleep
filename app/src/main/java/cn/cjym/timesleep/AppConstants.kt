@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep
 
 object AppConstants {
@@ -10,7 +14,7 @@ object AppConstants {
     const val SPLASH_SLOT_ID = "104134551"
     const val DRAW_FEED_SLOT_ID = "104134653"
     const val REWARDED_VIDEO_SLOT_ID = "104134740"
-    var isAdDisabled = true
+    var isAdDisabled = false
 
     // 友盟
     const val UMENG_APP_KEY = "6a302ff56f259537c7b9b9ee"

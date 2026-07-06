@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.service
 
 import android.annotation.SuppressLint
@@ -8,6 +12,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
@@ -34,6 +40,7 @@ class AudioPlayerService : Service() {
 
     private lateinit var mediaSession: MediaSessionCompat
     private var collectJob: Job? = null
+    private val coverCache = mutableMapOf<String, Bitmap?>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onCreate() {
@@ -95,10 +102,18 @@ class AudioPlayerService : Service() {
     }
 
     private fun updateMediaSession(nowPlaying: NowPlaying) {
+        val cover = coverBitmap(nowPlaying.scene.coverAssetPath)
         val metadata = MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, nowPlaying.scene.title)
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, AppConstants.APP_NAME)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, nowPlaying.scene.subtitle)
+            .apply {
+                if (cover != null) {
+                    putBitmap(MediaMetadataCompat.METADATA_KEY_ART, cover)
+                    putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, cover)
+                    putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, cover)
+                }
+            }
             .build()
         mediaSession.setMetadata(metadata)
 
@@ -123,22 +138,25 @@ class AudioPlayerService : Service() {
 
         val isPlaying = nowPlaying?.isPlaying == true
         val toggleAction = if (isPlaying) {
-            NotificationCompat.Action(android.R.drawable.ic_media_pause, "暂停", actionPendingIntent(ACTION_PAUSE))
+            NotificationCompat.Action(R.drawable.ic_notify_pause, "暂停", actionPendingIntent(ACTION_PAUSE))
         } else {
-            NotificationCompat.Action(android.R.drawable.ic_media_play, "播放", actionPendingIntent(ACTION_PLAY))
+            NotificationCompat.Action(R.drawable.ic_notify_play, "播放", actionPendingIntent(ACTION_PLAY))
         }
         val stopAction = NotificationCompat.Action(
-            android.R.drawable.ic_menu_close_clear_cancel, "停止", actionPendingIntent(ACTION_STOP),
+            R.drawable.ic_notify_stop, "停止", actionPendingIntent(ACTION_STOP),
         )
+        val cover = nowPlaying?.scene?.coverAssetPath?.let { coverBitmap(it) }
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(nowPlaying?.scene?.title ?: AppConstants.APP_NAME)
             .setContentText(nowPlaying?.scene?.subtitle ?: "正在准备播放")
             .setSmallIcon(R.drawable.launcher_icon)
+            .setLargeIcon(cover)
             .setContentIntent(contentIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
             .setOngoing(isPlaying)
+            .setColorized(false)
             .addAction(toggleAction)
             .addAction(stopAction)
             .setStyle(
@@ -147,6 +165,30 @@ class AudioPlayerService : Service() {
                     .setShowActionsInCompactView(0, 1),
             )
             .build()
+    }
+
+    private fun coverBitmap(assetPath: String): Bitmap? {
+        return coverCache.getOrPut(assetPath) {
+            runCatching {
+                assets.open(assetPath).use { input ->
+                    BitmapFactory.decodeStream(input)?.let { bitmap ->
+                        scaleCover(bitmap)
+                    }
+                }
+            }.getOrNull()
+        }
+    }
+
+    private fun scaleCover(bitmap: Bitmap): Bitmap {
+        val targetSize = 512
+        if (bitmap.width == targetSize && bitmap.height == targetSize) return bitmap
+        val scale = maxOf(targetSize.toFloat() / bitmap.width, targetSize.toFloat() / bitmap.height)
+        val scaledWidth = (bitmap.width * scale).toInt()
+        val scaledHeight = (bitmap.height * scale).toInt()
+        val scaled = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
+        val left = ((scaledWidth - targetSize) / 2).coerceAtLeast(0)
+        val top = ((scaledHeight - targetSize) / 2).coerceAtLeast(0)
+        return Bitmap.createBitmap(scaled, left, top, targetSize, targetSize)
     }
 
     private fun actionPendingIntent(action: String): PendingIntent {

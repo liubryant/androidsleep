@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.sleep
 
 import androidx.compose.animation.AnimatedVisibility
@@ -7,6 +11,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.AppConstants
 import cn.cjym.timesleep.data.model.SleepDistribution
@@ -297,7 +303,8 @@ private fun EventMetricBox(type: SleepEventType, count: Int, modifier: Modifier 
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
     ) {
         Icon(imageVector = type.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         Text(text = "$count", style = MaterialTheme.typography.titleMedium)
@@ -311,6 +318,8 @@ private fun EventMetricBox(type: SleepEventType, count: Int, modifier: Modifier 
 
 @Composable
 private fun SleepDistributionSection(distribution: SleepDistribution) {
+    val uriHandler = LocalUriHandler.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -344,6 +353,24 @@ private fun SleepDistributionSection(distribution: SleepDistribution) {
                 text = distributionAnalysisText(distribution),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = "参考来源：Sleep Foundation《Stages of Sleep》",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable {
+                    uriHandler.openUri("https://www.sleepfoundation.org/stages-of-sleep")
+                },
+            )
+
+            Text(
+                text = "参考来源：中国睡眠研究会",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable {
+                    uriHandler.openUri("http://www.zgsmyjh.org/")
+                },
             )
         }
     }
@@ -408,7 +435,8 @@ private fun MetricBox(title: String, value: String, modifier: Modifier = Modifie
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
     ) {
         Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(text = value, style = MaterialTheme.typography.titleMedium, maxLines = 1)

@@ -1,8 +1,13 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui
 
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.LegalLinks
@@ -80,6 +86,7 @@ private fun PrivacyAgreementDialog() {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.42f))
             .padding(24.dp),
         contentAlignment = Alignment.Center,
     ) {
@@ -104,7 +111,7 @@ private fun PrivacyAgreementDialog() {
                         .verticalScroll(rememberScrollState()),
                 ) {
                     Text(
-                        text = "欢迎使用时光睡眠。我们非常重视您的个人信息与隐私保护。请您在使用前仔细阅读以下协议，了解我们如何为您提供睡眠监测、声音播放、健康数据同步等服务。",
+                        text = "欢迎使用时光睡眠。我们非常重视您的个人信息与隐私保护。请您在使用前仔细阅读以下协议，了解我们如何为您提供睡眠监测、声音播放等服务。",
                         style = MaterialTheme.typography.bodyMedium,
                     )
 
@@ -123,7 +130,7 @@ private fun PrivacyAgreementDialog() {
                     }
 
                     Text(
-                        text = "在您点击\"同意并继续\"前，我们不会主动请求麦克风、健康数据等敏感权限，也不会开始睡眠声音监测。",
+                        text = "在您点击\"同意并继续\"前，我们不会主动请求麦克风等敏感权限，也不会开始睡眠声音监测。",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 12.dp),
                     )

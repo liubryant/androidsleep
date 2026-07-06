@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.shared
 
 import androidx.compose.foundation.background
@@ -11,13 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun AssetCoverImage(assetPath: String, modifier: Modifier = Modifier) {
+fun AssetCoverImage(
+    assetPath: String,
+    modifier: Modifier = Modifier,
+    placeholderIcon: ImageVector = Icons.Outlined.GraphicEq,
+) {
     val context = LocalContext.current
     SubcomposeAsyncImage(
         model = ImageRequest.Builder(context)
@@ -27,13 +36,16 @@ fun AssetCoverImage(assetPath: String, modifier: Modifier = Modifier) {
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = modifier,
-        error = { CoverPlaceholder(modifier = Modifier.fillMaxSize()) },
-        loading = { CoverPlaceholder(modifier = Modifier.fillMaxSize()) },
+        error = { CoverPlaceholder(modifier = Modifier.fillMaxSize(), icon = placeholderIcon) },
+        loading = { CoverPlaceholder(modifier = Modifier.fillMaxSize(), icon = placeholderIcon) },
     )
 }
 
 @Composable
-fun CoverPlaceholder(modifier: Modifier = Modifier) {
+fun CoverPlaceholder(
+    modifier: Modifier = Modifier,
+    icon: ImageVector = Icons.Outlined.GraphicEq,
+) {
     Box(
         modifier = modifier.background(
             Brush.linearGradient(
@@ -46,7 +58,7 @@ fun CoverPlaceholder(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = Icons.Outlined.GraphicEq,
+            imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onPrimary,
         )

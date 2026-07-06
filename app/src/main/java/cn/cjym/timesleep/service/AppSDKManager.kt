@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.service
 
 import android.content.Context
@@ -19,12 +23,6 @@ object AppSDKManager {
 
         UMengAnalytics.initialize(context)
 
-        PangleAdManager.initialize { success ->
-            if (showSplash && success) {
-                PangleSplashAdManager.loadAndShowDefaultSplashAd { _, _ -> onComplete() }
-            } else {
-                onComplete()
-            }
-        }
+        PangleAdManager.initialize(context) { onComplete() }
     }
 }

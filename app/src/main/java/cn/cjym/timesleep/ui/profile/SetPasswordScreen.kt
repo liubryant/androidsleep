@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
@@ -10,19 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,7 +41,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** 修改登录密码页面，对应 iOS `SetPasswordView`：验证码 + 新密码。 */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetPasswordScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -70,16 +67,7 @@ fun SetPasswordScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("修改密码") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
-                    }
-                },
-            )
-        },
+        topBar = { ProfileTopBar(title = "修改密码", onBack = onBack) },
         modifier = modifier,
     ) { innerPadding ->
         Column(

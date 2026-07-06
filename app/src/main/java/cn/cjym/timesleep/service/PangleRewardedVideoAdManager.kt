@@ -1,3 +1,7 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.service
 
 import cn.cjym.timesleep.AppConstants
@@ -8,16 +12,16 @@ import cn.cjym.timesleep.AppConstants
  * 默认为 true 时直接放行。
  */
 object PangleRewardedVideoAdManager {
-    fun showForRecordingAccess(onResult: (granted: Boolean) -> Unit) {
+    fun showForRecordingAccess(context: android.content.Context, onResult: (granted: Boolean) -> Unit) {
         if (AppConstants.isAdDisabled) {
             onResult(true)
             return
         }
 
         if (!PangleAdManager.isSDKInitialized()) {
-            PangleAdManager.initialize { success ->
+            PangleAdManager.initialize(context) { success ->
                 if (success) {
-                    showForRecordingAccess(onResult)
+                    showForRecordingAccess(context, onResult)
                 } else {
                     onResult(false)
                 }

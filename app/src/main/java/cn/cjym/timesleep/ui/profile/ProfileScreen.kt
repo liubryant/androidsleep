@@ -1,6 +1,9 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.profile
 
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,18 +24,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -57,7 +57,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.CacheManager
-import cn.cjym.timesleep.service.HealthConnectManager
 import cn.cjym.timesleep.service.SleepMonitorManager
 import cn.cjym.timesleep.ui.shared.AssetCoverImage
 import kotlinx.coroutines.Dispatchers
@@ -115,9 +114,6 @@ private fun ProfileHomeScreen(
     val saveAudioClips by app.settings.saveAudioClips.collectAsState(initial = true)
     val sensitivity by app.settings.sensitivity.collectAsState(initial = 0.65)
 
-    val isHealthAuthorized by HealthConnectManager.isAuthorized.collectAsState()
-    val healthStatusText by HealthConnectManager.statusText.collectAsState()
-
     var cacheSizeText by remember { mutableStateOf("") }
     var showClearAlert by remember { mutableStateOf(false) }
 
@@ -128,20 +124,16 @@ private fun ProfileHomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        HealthConnectManager.refreshAuthorization(context)
         refreshCacheSize()
     }
-
-    val healthPermissionLauncher = rememberLauncherForActivityResult(
-        contract = HealthConnectManager.requestPermissionsContract(),
-    ) { granted -> HealthConnectManager.onPermissionResult(granted) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         ProfileHeader(
             isLoggedIn = isLoggedIn,
@@ -153,18 +145,6 @@ private fun ProfileHomeScreen(
 
         ProfileSection(title = "权限") {
             InfoRow(icon = Icons.Filled.Mic, label = "麦克风", value = "使用时申请")
-            InfoRow(
-                icon = if (isHealthAuthorized) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                label = "Health Connect",
-                value = healthStatusText,
-                valueColor = if (isHealthAuthorized) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            OutlinedButton(
-                onClick = { healthPermissionLauncher.launch(HealthConnectManager.permissionsToRequest()) },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("授权 Health Connect")
-            }
         }
 
         ProfileSection(title = "睡眠监测") {
@@ -176,6 +156,10 @@ private fun ProfileHomeScreen(
                 Switch(
                     checked = saveAudioClips,
                     onCheckedChange = { value -> scope.launch { app.settings.setSaveAudioClips(value) } },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        uncheckedThumbColor = Color.White,
+                    ),
                 )
             }
 
@@ -198,15 +182,13 @@ private fun ProfileHomeScreen(
 
         ProfileSection(title = "数据") {
             InfoRow(icon = Icons.Filled.Storage, label = "数据大小", value = cacheSizeText)
-            OutlinedButton(
+            HorizontalDivider()
+            ActionRow(
+                icon = Icons.Filled.Delete,
+                label = "清除数据",
                 onClick = { showClearAlert = true },
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(imageVector = Icons.Filled.Delete, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("清除数据")
-            }
+                labelColor = MaterialTheme.colorScheme.error,
+            )
         }
 
         if (isLoggedIn) {
@@ -255,8 +237,8 @@ private fun ProfileHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(170.dp)
-            .clip(RoundedCornerShape(8.dp)),
+            .height(188.dp)
+            .clip(RoundedCornerShape(14.dp)),
     ) {
         AssetCoverImage(assetPath = "SoundResources/010_热带雨林/cover.jpg", modifier = Modifier.fillMaxSize())
 
@@ -274,28 +256,30 @@ private fun ProfileHeader(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(22.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp),
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Icon(
+                        imageVector = Icons.Filled.AccountCircle,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(54.dp),
+                    )
 
-                Column {
-                    Text(
-                        text = if (isLoggedIn) phoneNumber else "未登录",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
-                    )
-                    Text(
-                        text = if (isLoggedIn) "睡眠目标：每天 8 小时" else "登录后同步睡眠记录和设置",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.86f),
-                    )
+                    Column {
+                        Text(
+                            text = if (isLoggedIn) phoneNumber else "未登录",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                        )
+                        Text(
+                            text = if (isLoggedIn) "睡眠目标：每天 8 小时" else "登录后同步睡眠记录和设置",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.86f),
+                        )
+                    }
                 }
             }
 
@@ -327,17 +311,18 @@ private fun HeaderActionButton(text: String, onClick: () -> Unit) {
 
 @Composable
 private fun ProfileSection(title: String, content: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
         Text(
             text = title,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 4.dp),
         )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-                .padding(14.dp),
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             content()
@@ -354,6 +339,26 @@ private fun InfoRow(icon: ImageVector?, label: String, value: String, valueColor
         }
         Text(text = label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
         Text(text = value, style = MaterialTheme.typography.bodyMedium, color = valueColor)
+    }
+}
+
+@Composable
+private fun ActionRow(icon: ImageVector, label: String, onClick: () -> Unit, labelColor: Color = Color.Unspecified) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+    ) {
+        Icon(imageVector = icon, contentDescription = null, tint = labelColor, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(text = label, style = MaterialTheme.typography.bodyMedium, color = labelColor, modifier = Modifier.weight(1f))
+        Icon(
+            imageVector = Icons.Filled.ChevronRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

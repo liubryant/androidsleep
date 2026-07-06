@@ -1,5 +1,12 @@
+/**
+ * Author: liuzheng <bryant_liu24@126.com>
+ */
+
 package cn.cjym.timesleep.ui.sleep
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +32,6 @@ import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
@@ -35,15 +40,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,13 +58,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import cn.cjym.timesleep.data.model.SampleSleepSession
 import cn.cjym.timesleep.data.model.SleepEventType
 import cn.cjym.timesleep.data.model.SleepSession
 import cn.cjym.timesleep.data.model.SleepTrendCalculator
 import cn.cjym.timesleep.data.model.SleepTrendPoint
 import cn.cjym.timesleep.data.model.SleepTrendRange
-import cn.cjym.timesleep.service.HealthConnectManager
 import cn.cjym.timesleep.service.SleepMonitorManager
 import cn.cjym.timesleep.ui.shared.AssetCoverImage
 import cn.cjym.timesleep.ui.shared.EmptyState
@@ -88,24 +88,24 @@ fun SleepHomeScreen(modifier: Modifier = Modifier) {
     val currentDecibel by SleepMonitorManager.currentDecibel.collectAsState()
     val permissionDenied by SleepMonitorManager.permissionDenied.collectAsState()
     val reportTooShort by SleepMonitorManager.reportTooShort.collectAsState()
-    val isHealthAuthorized by HealthConnectManager.isAuthorized.collectAsState()
-
     var trendRange by remember { mutableStateOf(SleepTrendRange.week) }
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
 
-    val healthPermissionLauncher = rememberLauncherForActivityResult(
-        contract = HealthConnectManager.requestPermissionsContract(),
-    ) { granted -> HealthConnectManager.onPermissionResult(granted) }
-
-    LaunchedEffect(Unit) { HealthConnectManager.refreshAuthorization(context) }
+    val microphonePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            SleepMonitorManager.start(context)
+        } else {
+            SleepMonitorManager.start(context)
+        }
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         SleepTopBar(
             currentPage = pagerState.currentPage,
             onPageSelected = { page -> scope.launch { pagerState.animateScrollToPage(page) } },
-            isHealthAuthorized = isHealthAuthorized,
-            onHealthClick = { healthPermissionLauncher.launch(HealthConnectManager.permissionsToRequest()) },
         )
 
         HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
@@ -123,11 +123,12 @@ fun SleepHomeScreen(modifier: Modifier = Modifier) {
                         onToggle = {
                             if (isMonitoring) {
                                 SleepMonitorManager.stop(context)
-                                SleepMonitorManager.latestSession.value?.let { session ->
-                                    scope.launch { HealthConnectManager.save(context, session) }
-                                }
                             } else {
-                                SleepMonitorManager.start(context)
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                                    SleepMonitorManager.start(context)
+                                } else {
+                                    microphonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                }
                             }
                         },
                     )
@@ -184,8 +185,6 @@ fun SleepHomeScreen(modifier: Modifier = Modifier) {
 private fun SleepTopBar(
     currentPage: Int,
     onPageSelected: (Int) -> Unit,
-    isHealthAuthorized: Boolean,
-    onHealthClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -195,6 +194,7 @@ private fun SleepTopBar(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             listOf("开始睡眠" to 0, "睡眠报告" to 1).forEach { (title, page) ->
                 val selected = currentPage == page
@@ -204,7 +204,7 @@ private fun SleepTopBar(
                 ) {
                     Text(
                         text = title,
-                        style = if (selected) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                         color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -218,17 +218,6 @@ private fun SleepTopBar(
                     )
                 }
             }
-        }
-
-        IconButton(
-            onClick = onHealthClick,
-            modifier = Modifier.align(Alignment.CenterEnd),
-        ) {
-            Icon(
-                imageVector = if (isHealthAuthorized) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = "健康记录",
-                tint = MaterialTheme.colorScheme.primary,
-            )
         }
     }
 }
@@ -296,9 +285,10 @@ private fun StatusPanel(isMonitoring: Boolean, currentDecibel: Double, onToggle:
                 Icon(
                     imageVector = if (isMonitoring) Icons.Filled.Stop else Icons.Filled.PlayArrow,
                     contentDescription = null,
+                    tint = Color.White,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = if (isMonitoring) "结束睡眠" else "开始睡眠")
+                Text(text = if (isMonitoring) "结束睡眠" else "开始睡眠", color = Color.White)
             }
         }
     }
@@ -315,7 +305,8 @@ private fun SleepEventSummaryGrid(session: SleepSession?) {
                             .weight(1f)
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
                             .padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
                     ) {
                         Icon(imageVector = type.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Text(text = "${session?.eventCount(type) ?: 0}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
@@ -346,16 +337,7 @@ private fun TrendPanel(sessions: List<SleepSession>, range: SleepTrendRange, onR
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f),
             )
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.width(116.dp)) {
-                SleepTrendRange.entries.forEachIndexed { index, value ->
-                    SegmentedButton(
-                        selected = range == value,
-                        onClick = { onRangeChange(value) },
-                        shape = SegmentedButtonDefaults.itemShape(index = index, count = SleepTrendRange.entries.size),
-                        label = { Text(text = value.title) },
-                    )
-                }
-            }
+            TrendRangePicker(range = range, onRangeChange = onRangeChange)
         }
 
         if (sessions.isEmpty()) {
@@ -378,12 +360,44 @@ private fun TrendPanel(sessions: List<SleepSession>, range: SleepTrendRange, onR
 }
 
 @Composable
+private fun TrendRangePicker(range: SleepTrendRange, onRangeChange: (SleepTrendRange) -> Unit) {
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+            .padding(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SleepTrendRange.entries.forEach { value ->
+            val selected = range == value
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .width(48.dp)
+                    .height(28.dp)
+                    .clip(RoundedCornerShape(7.dp))
+                    .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                    .clickable { onRangeChange(value) },
+            ) {
+                Text(
+                    text = value.title,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                    color = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun TrendMetricBox(title: String, value: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
     ) {
         Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(text = value, style = MaterialTheme.typography.titleSmall, maxLines = 1)
