@@ -4,6 +4,9 @@
 
 package cn.cjym.timesleep.ui.profile
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,8 +18,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -39,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import cn.cjym.timesleep.LegalLinks
 import cn.cjym.timesleep.R
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.AuthRepository
@@ -63,11 +71,15 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     var isLoggingIn by remember { mutableStateOf(false) }
     var countdown by remember { mutableStateOf(0) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var agreementChecked by remember { mutableStateOf(false) }
 
     val isPhoneValid = phone.matches(Regex("^1[3-9]\\d{9}$"))
     val isCodeValid = code.length == 6 && code.all { it.isDigit() }
     val isPasswordValid = password.length >= 6
-    val canSubmit = isPhoneValid && (if (mode == LoginMode.Code) isCodeValid else isPasswordValid) && !isLoggingIn
+    val canSubmit = agreementChecked &&
+        isPhoneValid &&
+        (if (mode == LoginMode.Code) isCodeValid else isPasswordValid) &&
+        !isLoggingIn
 
     LaunchedEffect(countdown) {
         if (countdown > 0) {
@@ -165,6 +177,46 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 Text(text = message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
             }
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { agreementChecked = !agreementChecked },
+            ) {
+                Icon(
+                    imageVector = if (agreementChecked) Icons.Filled.CheckBox else Icons.Filled.CheckBoxOutlineBlank,
+                    contentDescription = if (agreementChecked) "已同意协议" else "未同意协议",
+                    tint = if (agreementChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = "我已阅读并同意",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
+                Text(
+                    text = "《用户协议》",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        openLegalUrl(context, LegalLinks.USER_AGREEMENT_URL)
+                    },
+                )
+                Text(
+                    text = "和",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = "《隐私政策》",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        openLegalUrl(context, LegalLinks.PRIVACY_POLICY_URL)
+                    },
+                )
+            }
+
             Button(
                 enabled = canSubmit,
                 onClick = {
@@ -202,15 +254,12 @@ fun LoginScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = "继续即表示你同意用户协议和隐私政策。",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
         }
     }
+}
+
+private fun openLegalUrl(context: android.content.Context, url: String) {
+    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
 
 @Composable

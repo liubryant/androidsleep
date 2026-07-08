@@ -47,6 +47,7 @@ object StoryPlayerManager {
     private var speechStartCharacter = 0
     private var speechCurrentCharacter = 0
     private var activeUtteranceId: String? = null
+    private var pendingSpeechCharacter: Int? = null
 
     private val _nowPlaying = MutableStateFlow<StoryNowPlaying?>(null)
     val nowPlaying: StateFlow<StoryNowPlaying?> = _nowPlaying.asStateFlow()
@@ -59,6 +60,10 @@ object StoryPlayerManager {
                 textToSpeech?.language = Locale.CHINA
                 textToSpeech?.setSpeechRate(0.9f)
                 textToSpeech?.setPitch(0.98f)
+                pendingSpeechCharacter?.let { character ->
+                    pendingSpeechCharacter = null
+                    scope.launch { speakFrom(character) }
+                }
             }
         }.also { tts ->
             tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
@@ -99,7 +104,7 @@ object StoryPlayerManager {
     }
 
     fun isBundledOrCached(story: StoryItem): Boolean {
-        return story.isBundled || cachedAudioFile(story).exists()
+        return isPlayableAudio(story) && (story.isBundled || cachedAudioFile(story).exists())
     }
 
     fun toggle(story: StoryItem, text: String) {
@@ -232,7 +237,12 @@ object StoryPlayerManager {
 
     private fun speakFrom(character: Int) {
         val text = activeSpeechText
-        if (text.isBlank() || !ttsReady) {
+        if (text.isBlank()) {
+            _nowPlaying.update { it?.copy(isPlaying = false) }
+            return
+        }
+        if (!ttsReady) {
+            pendingSpeechCharacter = character
             _nowPlaying.update { it?.copy(isPlaying = false) }
             return
         }
@@ -288,6 +298,7 @@ object StoryPlayerManager {
         mediaPlayer?.release()
         mediaPlayer = null
         activeSpeechText = ""
+        pendingSpeechCharacter = null
         speechStartCharacter = 0
         speechCurrentCharacter = 0
         if (clearState) {
@@ -317,6 +328,11 @@ object StoryPlayerManager {
     private fun cachedAudioFile(story: StoryItem): File {
         val extension = story.audioFile.substringAfterLast('.', "m4a")
         return File(File(appContext.cacheDir, "Stories"), "${story.id}.$extension")
+    }
+
+    private fun isPlayableAudio(story: StoryItem): Boolean {
+        val extension = story.audioFile.substringAfterLast('.', "").lowercase(Locale.US)
+        return extension in setOf("m4a", "mp3", "aac", "wav", "ogg", "flac")
     }
 
     private fun estimatedSpeechDuration(text: String): Double {
