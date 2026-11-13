@@ -1,0 +1,2460 @@
+{
+  "definitions": [
+    {
+      "id": "sleepHealth",
+      "title": "睡眠状态测评",
+      "subtitle": "了解近期睡眠困扰",
+      "introduction": "从入睡、夜醒、睡眠时长和白天状态几个方面，梳理最近的睡眠体验。",
+      "periodText": "请根据最近 2 周的真实感受作答",
+      "questions": [
+        {
+          "id": "sleepHealth_1",
+          "text": "躺下后超过 30 分钟仍难以入睡",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_2",
+          "text": "夜间醒来后很难再次入睡",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_3",
+          "text": "比期望时间更早醒来，并且无法继续睡",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_4",
+          "text": "实际睡眠时间不足，醒来仍感到疲惫",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_5",
+          "text": "睡眠时间每天变化较大，作息不规律",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_6",
+          "text": "白天容易困倦、注意力不集中",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_7",
+          "text": "会因为担心睡不好而变得紧张",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "sleepHealth_8",
+          "text": "睡眠问题影响了工作、学习或情绪",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mood",
+      "title": "情绪状态筛查",
+      "subtitle": "PHQ-2 两题快速筛查",
+      "introduction": "这是简短的情绪健康筛查，用于帮助你觉察近期状态，不用于诊断。",
+      "periodText": "过去 2 周内，你有多少时间受到以下问题困扰？",
+      "questions": [
+        {
+          "id": "mood_1",
+          "text": "做事时提不起劲或没有兴趣",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "mood_2",
+          "text": "感到心情低落、沮丧或没有希望",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "anxiety",
+      "title": "焦虑状态筛查",
+      "subtitle": "GAD-7 近期焦虑感受",
+      "introduction": "通过 7 个问题了解紧张、担忧和放松困难的程度，结果仅作为自我观察参考。",
+      "periodText": "过去 2 周内，你有多少时间受到以下问题困扰？",
+      "questions": [
+        {
+          "id": "anxiety_1",
+          "text": "感到紧张、焦虑或急切",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "anxiety_2",
+          "text": "不能停止或控制担忧",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "anxiety_3",
+          "text": "对各种事情担忧过多",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "anxiety_4",
+          "text": "很难放松下来",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "anxiety_5",
+          "text": "由于不安而无法静坐",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "anxiety_6",
+          "text": "变得容易烦恼或急躁",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "anxiety_7",
+          "text": "感到似乎将有可怕的事情发生",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "完全没有",
+              "score": 0
+            },
+            {
+              "text": "有几天",
+              "score": 1
+            },
+            {
+              "text": "一半以上天数",
+              "score": 2
+            },
+            {
+              "text": "几乎每天",
+              "score": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mbti",
+      "title": "MBTI 人格测试",
+      "subtitle": "探索你的 16 型人格偏好",
+      "introduction": "从精力来源、信息获取、决策方式和生活态度四个维度，了解你更自然的人格偏好。",
+      "periodText": "共 36 题，请按长期真实状态作答，不必选择理想中的自己",
+      "questions": [
+        {
+          "id": "mbti_1",
+          "text": "参加热闹活动时，我通常会越聊越有精神",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_2",
+          "text": "忙碌一天后，我更想独处一会儿恢复精力",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_3",
+          "text": "进入陌生群体时，我常会主动开启话题",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_4",
+          "text": "表达观点前，我习惯先在心里整理清楚",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_5",
+          "text": "频繁与人互动通常会让我充满能量",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_6",
+          "text": "相比认识很多人，我更看重少数深入的关系",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_7",
+          "text": "讨论问题时，我常常边说边形成自己的想法",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_8",
+          "text": "安静、不被打扰的环境更容易让我进入状态",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_9",
+          "text": "一场聚会结束后，我通常还想继续参加活动",
+          "dimension": "EI",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_10",
+          "text": "接触新事物时，我会先留意具体事实和细节",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_11",
+          "text": "我常能从零散信息中联想到未来的可能性",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_12",
+          "text": "我更信任经过验证、步骤清楚的做法",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_13",
+          "text": "比起操作细节，我更容易被概念和整体图景吸引",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_14",
+          "text": "做决定时，现实经验通常比灵感更可靠",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_15",
+          "text": "我喜欢思考事物背后的含义、趋势和关联",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_16",
+          "text": "说明越具体直接，我越容易理解和执行",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_17",
+          "text": "我经常想象一件事还可以有哪些不同发展",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_18",
+          "text": "有可观察的证据时，我才更愿意相信一个判断",
+          "dimension": "SN",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_19",
+          "text": "意见冲突时，我会优先依据一致的原则和逻辑",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_20",
+          "text": "做选择时，我会特别考虑它对相关人的感受影响",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_21",
+          "text": "指出问题时，准确直接通常比委婉更重要",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_22",
+          "text": "即使效率稍低，我也愿意照顾团队关系与和谐",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_23",
+          "text": "只要规则公平，我能接受一个让人不舒服的结论",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_24",
+          "text": "是否符合自己的价值观，会明显影响我的决定",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_25",
+          "text": "讨论中，我更关注观点是否成立，而不是谁提出它",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_26",
+          "text": "我会根据对方的状态调整表达方式和语气",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_27",
+          "text": "面对难题时，客观分析通常比共情更能帮助我判断",
+          "dimension": "TF",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_28",
+          "text": "重要事情开始前，我喜欢先确定计划和完成节点",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_29",
+          "text": "保留调整空间，会让我比严格按计划更自在",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_30",
+          "text": "事情有明确结论后，我会感到更轻松",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_31",
+          "text": "临时变化常能激发我随机应变的能力",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_32",
+          "text": "清晰的日程和截止时间能帮助我保持掌控感",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_33",
+          "text": "在真正需要决定前，我倾向继续保留不同选项",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_34",
+          "text": "我喜欢用清单逐项完成任务，很少随意跳过",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "mbti_35",
+          "text": "越接近截止时间，我有时反而越容易集中精力",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "比较同意",
+              "score": 3
+            },
+            {
+              "text": "非常同意",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "id": "mbti_36",
+          "text": "自由安排一天时，我也倾向提前规划大致节奏",
+          "dimension": "JP",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 4
+            },
+            {
+              "text": "比较不同意",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bigFive",
+      "title": "大五性格探索",
+      "subtitle": "了解稳定的人格倾向",
+      "introduction": "基于 IPIP 公共领域题项思路设计，从五个维度描绘你的性格倾向。性格没有好坏，也不建议频繁重复测量。",
+      "periodText": "请选择最符合你平时状态的选项",
+      "questions": [
+        {
+          "id": "bigFive_1",
+          "text": "我愿意主动认识新朋友",
+          "dimension": "外向性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_2",
+          "text": "在人多的场合，我通常比较安静",
+          "dimension": "外向性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_3",
+          "text": "与他人相处会让我感到有活力",
+          "dimension": "外向性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_4",
+          "text": "我更喜欢独自待着，而不是参加聚会",
+          "dimension": "外向性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_5",
+          "text": "我会关心并体谅他人的感受",
+          "dimension": "宜人性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_6",
+          "text": "发生分歧时，我很难站在对方角度思考",
+          "dimension": "宜人性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_7",
+          "text": "我通常愿意信任和帮助别人",
+          "dimension": "宜人性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_8",
+          "text": "我有时会对别人表现得冷淡",
+          "dimension": "宜人性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_9",
+          "text": "我习惯提前安排并按计划完成事情",
+          "dimension": "尽责性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_10",
+          "text": "我经常把重要的事情拖到最后",
+          "dimension": "尽责性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_11",
+          "text": "我会留意细节并把事情做完整",
+          "dimension": "尽责性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_12",
+          "text": "我的物品和日程常常比较混乱",
+          "dimension": "尽责性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_13",
+          "text": "压力来临时，我通常能保持平稳",
+          "dimension": "情绪稳定性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_14",
+          "text": "我容易因小事变得焦虑或不安",
+          "dimension": "情绪稳定性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_15",
+          "text": "遇到挫折后，我能较快恢复",
+          "dimension": "情绪稳定性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_16",
+          "text": "我的情绪很容易出现较大波动",
+          "dimension": "情绪稳定性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_17",
+          "text": "我喜欢探索新知识和不同观点",
+          "dimension": "开放性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_18",
+          "text": "我对陌生的想法通常没有兴趣",
+          "dimension": "开放性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "bigFive_19",
+          "text": "艺术、想象或创意会吸引我",
+          "dimension": "开放性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 1
+            },
+            {
+              "text": "比较不同意",
+              "score": 2
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 4
+            },
+            {
+              "text": "非常同意",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "bigFive_20",
+          "text": "我更偏好熟悉的方法，不太愿意尝试变化",
+          "dimension": "开放性",
+          "choices": [
+            {
+              "text": "非常不同意",
+              "score": 5
+            },
+            {
+              "text": "比较不同意",
+              "score": 4
+            },
+            {
+              "text": "不确定",
+              "score": 3
+            },
+            {
+              "text": "比较同意",
+              "score": 2
+            },
+            {
+              "text": "非常同意",
+              "score": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stress",
+      "title": "压力状态自测",
+      "subtitle": "觉察身心负荷与恢复",
+      "introduction": "从身体紧绷、思绪负担和恢复能力三个方面，了解当前压力状态。",
+      "periodText": "请根据最近 7 天的感受作答",
+      "questions": [
+        {
+          "id": "stress_1",
+          "text": "即使休息后，身体仍感到疲惫",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_2",
+          "text": "脑中有很多事情，很难真正安静下来",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_3",
+          "text": "肩颈、下颌或身体其他部位经常紧绷",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_4",
+          "text": "容易因为小事烦躁或失去耐心",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_5",
+          "text": "忙碌结束后仍无法从工作或学习中抽离",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_6",
+          "text": "近期难以集中注意力或做决定",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_7",
+          "text": "休息时会因为没有做事而感到不安",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "stress_8",
+          "text": "压力已经影响到睡眠或食欲",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "从不",
+              "score": 0
+            },
+            {
+              "text": "偶尔",
+              "score": 1
+            },
+            {
+              "text": "经常",
+              "score": 2
+            },
+            {
+              "text": "几乎总是",
+              "score": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chronotype",
+      "title": "作息类型探索",
+      "subtitle": "认识自己的昼夜节律",
+      "introduction": "根据自然状态下的精神高峰、入睡和起床偏好，了解你更接近晨型、弹性型还是夜型。",
+      "periodText": "请按没有闹钟和临时任务时的自然倾向作答",
+      "questions": [
+        {
+          "id": "chronotype_1",
+          "text": "你的自然入睡时间倾向",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "明显偏早",
+              "score": 0
+            },
+            {
+              "text": "稍微偏早",
+              "score": 1
+            },
+            {
+              "text": "稍微偏晚",
+              "score": 2
+            },
+            {
+              "text": "明显偏晚",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "chronotype_2",
+          "text": "你的自然起床时间倾向",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "明显偏早",
+              "score": 0
+            },
+            {
+              "text": "稍微偏早",
+              "score": 1
+            },
+            {
+              "text": "稍微偏晚",
+              "score": 2
+            },
+            {
+              "text": "明显偏晚",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "chronotype_3",
+          "text": "一天中精神最好的时间倾向",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "明显偏早",
+              "score": 0
+            },
+            {
+              "text": "稍微偏早",
+              "score": 1
+            },
+            {
+              "text": "稍微偏晚",
+              "score": 2
+            },
+            {
+              "text": "明显偏晚",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "chronotype_4",
+          "text": "如果自由安排，重要工作会放在什么时间",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "明显偏早",
+              "score": 0
+            },
+            {
+              "text": "稍微偏早",
+              "score": 1
+            },
+            {
+              "text": "稍微偏晚",
+              "score": 2
+            },
+            {
+              "text": "明显偏晚",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "chronotype_5",
+          "text": "周末作息相对工作日的变化倾向",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "明显偏早",
+              "score": 0
+            },
+            {
+              "text": "稍微偏早",
+              "score": 1
+            },
+            {
+              "text": "稍微偏晚",
+              "score": 2
+            },
+            {
+              "text": "明显偏晚",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": "chronotype_6",
+          "text": "晚上 10 点后的清醒程度倾向",
+          "dimension": null,
+          "choices": [
+            {
+              "text": "明显偏早",
+              "score": 0
+            },
+            {
+              "text": "稍微偏早",
+              "score": 1
+            },
+            {
+              "text": "稍微偏晚",
+              "score": 2
+            },
+            {
+              "text": "明显偏晚",
+              "score": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "profiles": {
+    "ISTJ": {
+      "nickname": "物流师",
+      "summary": "你重视事实、责任与秩序，习惯用可靠的方法把承诺落实。稳定和可预期会让你发挥得更好。",
+      "strengths": "细致可靠、善于规划，面对长期任务有耐心和执行力。",
+      "relationships": "你常用行动表达在意，也可以更直接地说出感受与肯定。",
+      "workStyle": "适合目标清晰、标准明确、能够持续积累专业能力的环境。",
+      "growth": "给变化和新方法留一点试验空间，不必凡事都独自承担。"
+    },
+    "ISFJ": {
+      "nickname": "守卫者",
+      "summary": "你温和务实，容易注意到他人的实际需要，并愿意默默维护熟悉的人和秩序。",
+      "strengths": "体贴、有责任感，能记住细节并持续照顾团队需要。",
+      "relationships": "关心别人时也要表达自己的界限，避免把需求一直放在最后。",
+      "workStyle": "适合重视协作、服务质量和稳定推进的工作方式。",
+      "growth": "练习面对冲突和拒绝，让付出建立在自愿与余力之上。"
+    },
+    "INFJ": {
+      "nickname": "提倡者",
+      "summary": "你关注意义、长期方向和人的成长，常把敏锐洞察转化为温和而坚定的行动。",
+      "strengths": "富有同理心和想象力，能够理解复杂动机并坚持重要价值。",
+      "relationships": "深度连接对你很重要，及时沟通期待能减少独自猜测和消耗。",
+      "workStyle": "适合能结合创意、助人价值与独立思考的长期项目。",
+      "growth": "降低对完美理解的期待，用小步行动代替过度内耗。"
+    },
+    "INTJ": {
+      "nickname": "建筑师",
+      "summary": "你擅长看见系统与长期路径，倾向独立思考，并持续优化低效的方法。",
+      "strengths": "战略清晰、学习自主，能把复杂目标拆成可执行结构。",
+      "relationships": "表达结论时补充感受和背景，会让你的关心更容易被接收到。",
+      "workStyle": "适合高自主度、需要分析创新和长期设计的挑战。",
+      "growth": "为现实反馈和他人经验保留位置，避免方案只在头脑中追求完美。"
+    },
+    "ISTP": {
+      "nickname": "鉴赏家",
+      "summary": "你冷静灵活，喜欢通过观察和亲手尝试理解事物，并能在突发情境中迅速解决问题。",
+      "strengths": "动手能力强、判断务实，面对压力时通常能抓住关键。",
+      "relationships": "给彼此空间很重要，也可以主动说明沉默并不等于疏远。",
+      "workStyle": "适合可独立探索、重视技能和即时问题解决的任务。",
+      "growth": "为长期承诺设置简单节点，减少兴趣下降后的搁置。"
+    },
+    "ISFP": {
+      "nickname": "探险家",
+      "summary": "你敏感真诚，重视个人价值和当下体验，常以自然、不张扬的方式表达审美与善意。",
+      "strengths": "观察细腻、适应力好，能用实际行动营造舒适和美感。",
+      "relationships": "不喜欢冲突时仍要说出真实需要，避免情绪累积后突然抽离。",
+      "workStyle": "适合有创造空间、节奏灵活且能看见真实影响的环境。",
+      "growth": "把重要愿望转化为小计划，让自由与持续行动同时存在。"
+    },
+    "INFP": {
+      "nickname": "调停者",
+      "summary": "你由内在价值和想象力驱动，珍视真诚，也容易看见人与世界尚未实现的可能。",
+      "strengths": "富有同理心、创造力和价值感，能为重要的事投入深度。",
+      "relationships": "别期待他人自动理解你的内心，清楚表达需求会让关系更稳固。",
+      "workStyle": "适合有意义、能自主创作并允许深度专注的任务。",
+      "growth": "用可完成的小步骤承接理想，避免选择过多导致迟迟不开始。"
+    },
+    "INTP": {
+      "nickname": "逻辑学家",
+      "summary": "你好奇而独立，喜欢拆解概念、寻找规律，并不断检验一个解释是否自洽。",
+      "strengths": "分析深入、想法新颖，能发现系统中的矛盾和改进空间。",
+      "relationships": "分享推理的同时也回应情绪，能减少“讲清了却没被理解”的落差。",
+      "workStyle": "适合探索复杂问题、保有自主权和学习空间的环境。",
+      "growth": "为想法设定交付点，用真实反馈结束无止境的优化。"
+    },
+    "ESTP": {
+      "nickname": "企业家",
+      "summary": "你行动直接、反应敏锐，喜欢在真实情境中把握机会，并通过尝试快速校准方向。",
+      "strengths": "果断务实、善于应变，能调动现场气氛并推动事情发生。",
+      "relationships": "在解决问题前先听完感受，会让你的直接变得更有支持感。",
+      "workStyle": "适合节奏快、反馈及时、需要谈判或现场决策的任务。",
+      "growth": "重要决定多看一步长期后果，为重复性收尾预留精力。"
+    },
+    "ESFP": {
+      "nickname": "表演者",
+      "summary": "你热情开放，容易感受到当下的乐趣和他人的状态，也愿意把活力带进关系与生活。",
+      "strengths": "亲和、灵活、有感染力，能快速营造轻松和参与感。",
+      "relationships": "保持热情的同时说清界限，不必用持续付出来维持所有关系。",
+      "workStyle": "适合有人际互动、创意表达和即时成果反馈的环境。",
+      "growth": "为金钱、时间和长期目标建立简单规则，减少冲动带来的压力。"
+    },
+    "ENFP": {
+      "nickname": "竞选者",
+      "summary": "你热情好奇，擅长发现人与想法之间的连接，并愿意为充满意义的可能性投入。",
+      "strengths": "创意丰富、善于鼓舞他人，能快速看见新的方向和潜力。",
+      "relationships": "新鲜感之外也要稳定回应承诺，让深度关系得到持续滋养。",
+      "workStyle": "适合变化丰富、可以创造和连接他人的项目。",
+      "growth": "减少同时启动的目标，用固定节奏完成最重要的一两件事。"
+    },
+    "ENTP": {
+      "nickname": "辩论家",
+      "summary": "你敏捷好奇，喜欢挑战默认答案，并通过观点碰撞发现更有趣、更有效的可能。",
+      "strengths": "反应快、善创新，能从多角度重构问题并激发讨论。",
+      "relationships": "辩论不一定是冲突，但需要确认对方此刻想讨论还是想被理解。",
+      "workStyle": "适合高变化、需要创意策略和快速试验的环境。",
+      "growth": "把注意力从“能否做到”延伸到“是否值得并能否完成”。"
+    },
+    "ESTJ": {
+      "nickname": "总经理",
+      "summary": "你务实果断，重视责任、规则和结果，习惯组织资源让计划稳定落地。",
+      "strengths": "执行有力、条理清楚，能够建立标准并推动团队达成目标。",
+      "relationships": "效率之外留意不同节奏和情绪，邀请反馈比直接判断更有效。",
+      "workStyle": "适合职责明确、需要组织协调和结果管理的环境。",
+      "growth": "面对新情况时允许先探索，再决定唯一正确的路径。"
+    },
+    "ESFJ": {
+      "nickname": "执政官",
+      "summary": "你热情可靠，重视归属与合作，常能察觉群体需要并主动维系关系。",
+      "strengths": "善于照顾细节、组织协作，能够让他人感到被看见和接纳。",
+      "relationships": "认可很重要，但不必用所有人的满意来衡量自己的价值。",
+      "workStyle": "适合沟通密集、服务他人并有清晰反馈的团队环境。",
+      "growth": "练习接纳分歧和不确定性，把精力留给真正重要的人和事。"
+    },
+    "ENFJ": {
+      "nickname": "主人公",
+      "summary": "你关注共同愿景和人的潜力，善于理解氛围，并推动大家朝更有意义的方向行动。",
+      "strengths": "有感染力、同理心强，能够组织协作并帮助他人成长。",
+      "relationships": "照顾全局时也要诚实表达自己的疲惫、边界和真实期待。",
+      "workStyle": "适合需要沟通领导、人才发展和价值驱动的工作。",
+      "growth": "把他人的选择还给他人，避免为所有人的结果承担责任。"
+    },
+    "ENTJ": {
+      "nickname": "指挥官",
+      "summary": "你目标清晰、重视效率，擅长整合资源、制定策略，并推动复杂计划获得结果。",
+      "strengths": "决策果断、视野长远，能在挑战中建立秩序和行动方向。",
+      "relationships": "放慢结论速度，先确认他人的顾虑，会让合作更持久。",
+      "workStyle": "适合高挑战、可承担责任并影响系统方向的环境。",
+      "growth": "将休息和情感连接也视为长期表现的一部分，而非效率的阻碍。"
+    }
+  },
+  "interpretations": {
+    "sleepHealth": [
+      {
+        "maximum": 5,
+        "level": "睡眠较稳定",
+        "summary": "近期睡眠困扰较少，继续保持规律作息和舒适的睡眠环境。",
+        "suggestions": [
+          "保持相对固定的起床时间。",
+          "睡前留出 30 分钟放松时间。",
+          "继续记录睡眠，观察长期趋势。"
+        ]
+      },
+      {
+        "maximum": 11,
+        "level": "轻度波动",
+        "summary": "近期睡眠出现一些波动，可以从作息、压力和睡前习惯开始调整。",
+        "suggestions": [
+          "固定起床时间，周末也尽量不要相差太多。",
+          "下午减少咖啡因，睡前减少强光和高强度信息。",
+          "连续记录两周，找出影响睡眠的因素。"
+        ]
+      },
+      {
+        "maximum": 17,
+        "level": "需要关注",
+        "summary": "多项睡眠体验正在影响恢复，建议主动调整并持续观察。",
+        "suggestions": [
+          "尝试规律作息和睡前放松练习。",
+          "白天适度运动，但避免临睡前剧烈运动。",
+          "若持续数周影响生活，可咨询睡眠门诊或专业人员。"
+        ]
+      },
+      {
+        "maximum": 24,
+        "level": "困扰较明显",
+        "summary": "近期睡眠困扰较为集中，单靠偶尔补觉可能难以恢复。",
+        "suggestions": [
+          "记录就寝、夜醒和白天状态，便于专业沟通。",
+          "不要自行长期依赖酒精或助眠药物。",
+          "建议尽早向睡眠门诊或专业人员寻求评估。"
+        ]
+      }
+    ],
+    "mood": [
+      {
+        "maximum": 2,
+        "level": "近期较平稳",
+        "summary": "筛查结果暂未显示明显的持续低落信号，请继续关注真实感受。",
+        "suggestions": [
+          "保持规律睡眠、运动与社交联系。",
+          "记录让自己感到轻松或有意义的小事。",
+          "如果感受发生明显变化，可以再次筛查或寻求支持。"
+        ]
+      },
+      {
+        "maximum": 6,
+        "level": "建议进一步关注",
+        "summary": "近期低落或兴趣下降出现得较频繁。该结果不是诊断，建议做更完整的专业评估。",
+        "suggestions": [
+          "与信任的人谈谈近期状态。",
+          "如果持续影响睡眠、工作或生活，请联系心理或医疗专业人员。",
+          "若感到自己或他人可能处于危险中，请立即联系当地急救服务并寻求身边人的帮助。"
+        ]
+      }
+    ],
+    "anxiety": [
+      {
+        "maximum": 4,
+        "level": "焦虑感较少",
+        "summary": "近期紧张和担忧处在较低水平。",
+        "suggestions": [
+          "继续保持规律睡眠和适度运动。",
+          "每天给自己留出短暂的无屏幕休息时间。",
+          "用呼吸练习维持放松能力。"
+        ]
+      },
+      {
+        "maximum": 9,
+        "level": "轻度焦虑感",
+        "summary": "近期存在一些紧张和担忧，可以通过日常调整持续观察。",
+        "suggestions": [
+          "把担忧写下来，区分可行动与暂不可控的部分。",
+          "减少睡前信息摄入，练习缓慢呼吸。",
+          "若持续加重或影响生活，建议寻求专业支持。"
+        ]
+      },
+      {
+        "maximum": 14,
+        "level": "中度焦虑感",
+        "summary": "紧张和担忧可能已经影响到放松、专注或睡眠，建议进一步关注。",
+        "suggestions": [
+          "与心理或医疗专业人员讨论近期状态。",
+          "保持基本作息，不用酒精等方式回避焦虑。",
+          "出现急性不适或安全风险时，立即寻求线下帮助。"
+        ]
+      },
+      {
+        "maximum": 21,
+        "level": "焦虑感较明显",
+        "summary": "近期焦虑相关体验较为频繁。该结果不是诊断，建议尽快获得专业评估。",
+        "suggestions": [
+          "联系心理咨询师、精神心理科或可信赖的医疗机构。",
+          "让信任的人知道你的状态，避免独自承受。",
+          "若感到自己或他人可能处于危险中，请立即联系当地急救服务。"
+        ]
+      }
+    ],
+    "stress": [
+      {
+        "maximum": 5,
+        "level": "恢复良好",
+        "summary": "目前身心负荷总体可控，仍有较好的恢复空间。",
+        "suggestions": [
+          "维持当前的休息节奏。",
+          "把有效的放松方式固定下来。",
+          "关注连续忙碌后的恢复时间。"
+        ]
+      },
+      {
+        "maximum": 11,
+        "level": "轻度负荷",
+        "summary": "近期有一些压力反应，需要更主动地安排恢复。",
+        "suggestions": [
+          "每天安排至少一次短暂停顿。",
+          "优先保证睡眠和规律饮食。",
+          "一次只处理一件最重要的事。"
+        ]
+      },
+      {
+        "maximum": 17,
+        "level": "负荷偏高",
+        "summary": "压力可能正在影响情绪、专注或睡眠。",
+        "suggestions": [
+          "减少非必要任务，为恢复留出明确时间。",
+          "和信任的人沟通当前负担。",
+          "持续影响生活时，考虑寻求专业支持。"
+        ]
+      },
+      {
+        "maximum": 24,
+        "level": "需要及时休整",
+        "summary": "多方面压力反应较明显，建议把恢复与求助放在更高优先级。",
+        "suggestions": [
+          "尽快减少可推迟的负荷并保证基本睡眠。",
+          "联系可信赖的人或专业人员获得支持。",
+          "如出现明显身体不适或安全风险，请及时就医。"
+        ]
+      }
+    ],
+    "chronotype": [
+      {
+        "maximum": 5,
+        "level": "偏晨型",
+        "summary": "你更可能在较早时段保持清醒和高效，晚间能量下降也会更早。",
+        "suggestions": [
+          "把重要任务安排在上午。",
+          "晚间提前降低灯光和信息刺激。",
+          "社交晚睡后仍尽量守住稳定起床时间。"
+        ]
+      },
+      {
+        "maximum": 12,
+        "level": "弹性型",
+        "summary": "你的作息偏好相对灵活，能在不同日程间调整。",
+        "suggestions": [
+          "选择一个稳定起床锚点。",
+          "根据当天精神高峰安排高难度任务。",
+          "避免因灵活而频繁大幅改变作息。"
+        ]
+      },
+      {
+        "maximum": 18,
+        "level": "偏夜型",
+        "summary": "你更可能在傍晚或夜间进入状态，过早起床时需要更长时间清醒。",
+        "suggestions": [
+          "起床后尽快接触自然光。",
+          "需要早起时，每几天只提前 15 至 30 分钟。",
+          "晚间减少强光刺激，帮助生物钟逐步前移。"
+        ]
+      }
+    ]
+  }
+}

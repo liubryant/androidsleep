@@ -21,5 +21,6 @@ data class SoundScene(
     val coverAssetPath: String get() = "SoundResources/$directory/$coverFile"
     val audioAssetPath: String get() = "SoundResources/$directory/$audioFile"
     val audioExtension: String get() = audioFile.substringAfterLast('.', "mp3")
+    val requiresVIP: Boolean get() = index > 30
     val isBundledAudio: Boolean get() = index <= 20
 }

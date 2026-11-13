@@ -5,6 +5,8 @@
 package cn.cjym.timesleep
 
 import android.os.Bundle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,9 +17,22 @@ import cn.cjym.timesleep.ui.AppRoot
 import cn.cjym.timesleep.ui.theme.TimeSleepTheme
 
 class MainActivity : ComponentActivity() {
+    var pendingRoute by androidx.compose.runtime.mutableStateOf<String?>(null)
+        private set
+    fun consumeRoute() { pendingRoute = null }
+    private fun readRoute(intent: android.content.Intent) {
+        pendingRoute = intent.getStringExtra("meditationId")?.let { "meditation/$it" }
+            ?: if(intent.getBooleanExtra("openStories",false)) "stories" else null
+    }
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        readRoute(intent)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        readRoute(intent)
+        enableEdgeToEdge(statusBarStyle = androidx.activity.SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = androidx.activity.SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
         setContent {
             TimeSleepTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {

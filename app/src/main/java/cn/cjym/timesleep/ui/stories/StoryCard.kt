@@ -78,7 +78,7 @@ fun StoryCard(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = if (story.isBundled) "点击播放" else "免费朗读",
+                text = story.author?.takeIf { it.isNotBlank() } ?: if (story.isBundled) "点击播放" else "免费朗读",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.White.copy(alpha = 0.92f),
                 maxLines = 1,
@@ -88,13 +88,13 @@ fun StoryCard(
 
         Surface(
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.92f),
+            color = Color.Black.copy(alpha = 0.45f),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(8.dp),
         ) {
             Text(
-                text = "免费",
+                text = if (story.isArticle) "散文" else "故事",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,

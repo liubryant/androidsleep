@@ -41,7 +41,7 @@ class SplashActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         WindowCompat.setDecorFitsSystemWindows(window, false)
         hideSystemBars()
-        window.setBackgroundDrawableResource(android.R.color.white)
+        window.setBackgroundDrawableResource(android.R.color.black)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.attributes = window.attributes.also {
                 it.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -76,11 +76,17 @@ class SplashActivity : ComponentActivity() {
 
     private fun buildSplashView(): FrameLayout {
         return FrameLayout(this).apply {
-            setBackgroundColor(ContextCompat.getColor(this@SplashActivity, android.R.color.white))
+            setBackgroundColor(ContextCompat.getColor(this@SplashActivity, android.R.color.black))
 
             val iconSize = (96 * resources.displayMetrics.density).toInt()
             val icon = ImageView(this@SplashActivity).apply {
                 setImageResource(R.drawable.launcher_icon)
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                    cornerRadius = 22 * resources.displayMetrics.density
+                    setColor(android.graphics.Color.BLACK)
+                }
+                clipToOutline = true
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }
             addView(

@@ -45,6 +45,7 @@ fun SoundCard(
     isFavorite: Boolean,
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
+    onLocked: () -> Unit = {},
 ) {
     val nowPlaying by AudioPlayerManager.nowPlaying.collectAsState()
     val downloadProgress by AudioPlayerManager.downloadProgress.collectAsState()
@@ -56,9 +57,8 @@ fun SoundCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-            .clickable { AudioPlayerManager.toggle(scene) }
-            .padding(10.dp),
+            .clickable { if (scene.requiresVIP && !cn.cjym.timesleep.service.MembershipAccess.active.value) onLocked() else AudioPlayerManager.toggle(scene) }
+,
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             AssetCoverImage(
@@ -68,6 +68,8 @@ fun SoundCard(
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)),
             )
+
+            if(scene.requiresVIP) cn.cjym.timesleep.ui.wellness.VIPBadge(Modifier.align(Alignment.TopStart).padding(8.dp))
 
             Surface(
                 shape = CircleShape,
@@ -162,7 +164,7 @@ fun SoundCard(
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .size(34.dp)
-                        .clickable { AudioPlayerManager.toggle(scene) },
+                        .clickable { if (scene.requiresVIP && !cn.cjym.timesleep.service.MembershipAccess.active.value) onLocked() else AudioPlayerManager.toggle(scene) },
                 ) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                         Icon(

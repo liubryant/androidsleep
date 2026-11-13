@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+
+    <!-- Warm gold outer circle -->
+    <path
+        android:fillColor="#F0B429"
+        android:pathData="M18,2 a16,16 0,1 0,0.01 0z" />
+
+    <!-- Inner cream highlight circle -->
+    <path
+        android:fillColor="#FEF0C0"
+        android:pathData="M18,5.5 a12.5,12.5 0,1 0,0.01 0z" />
+
+    <!-- 4-pointed sparkle centered at (18,18) -->
+    <path
+        android:fillColor="#7B3A08"
+        android:pathData="M18,9.5 C19.2,13.2 22.8,16.8 26.5,18 C22.8,19.2 19.2,22.8 18,26.5 C16.8,22.8 13.2,19.2 9.5,18 C13.2,16.8 16.8,13.2 18,9.5 Z" />
+
+    <!-- Center dot -->
+    <path
+        android:fillColor="#FEF0C0"
+        android:pathData="M18,16 a2,2 0,1 0,0.01 0z" />
+
+    <!-- Small accent sparkle upper-right -->
+    <path
+        android:fillColor="#F0B429"
+        android:pathData="M25,8.5 C25.3,9.5 26.3,10.5 27.3,10.8 C26.3,11.1 25.3,12.1 25,13.1 C24.7,12.1 23.7,11.1 22.7,10.8 C23.7,10.5 24.7,9.5 25,8.5 Z" />
+
+</vector>

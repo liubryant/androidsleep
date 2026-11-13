@@ -23,6 +23,9 @@ private val DarkColors = darkColorScheme(
     primary = IndigoLight,
     onPrimary = DarkBackground,
     secondary = IndigoDark,
+    onBackground = androidx.compose.ui.graphics.Color.White,
+    onSurface = androidx.compose.ui.graphics.Color.White,
+    onSurfaceVariant = androidx.compose.ui.graphics.Color(0xFFA6A6A6),
     background = DarkBackground,
     surface = DarkSurface,
     surfaceVariant = DarkSecondarySurface,
@@ -30,7 +33,7 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun TimeSleepTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColors else LightColors

@@ -52,6 +52,9 @@ object AudioPlayerManager {
     }
 
     fun toggle(scene: SoundScene) {
+        if (scene.index > 30 && !MembershipAccess.active.value) return
+        MindfulnessPlayer.stop()
+        StoryPlayerManager.stop()
         val current = _nowPlaying.value
         if (current?.scene?.id == scene.id) {
             if (current.isPlaying) pause() else resume()
@@ -68,6 +71,8 @@ object AudioPlayerManager {
     }
 
     fun resume() {
+        MindfulnessPlayer.stop()
+        StoryPlayerManager.stop()
         mediaPlayer?.start()
         _nowPlaying.update { it?.copy(isPlaying = true) }
         startPlaybackService()

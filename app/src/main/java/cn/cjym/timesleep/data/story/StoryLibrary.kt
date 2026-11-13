@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
 
 class StoryLibrary(context: Context) {
     private val appContext = context.applicationContext
@@ -20,6 +20,16 @@ class StoryLibrary(context: Context) {
     private val _stories = MutableStateFlow<List<StoryItem>>(emptyList())
     val stories: StateFlow<List<StoryItem>> = _stories.asStateFlow()
 
+    private val prefs = appContext.getSharedPreferences("story_library", Context.MODE_PRIVATE)
+    private val _favorites = MutableStateFlow(prefs.getStringSet("favorites", emptySet())!!.toSet())
+    val favorites = _favorites.asStateFlow()
+    private val _articlesEnabled = MutableStateFlow(false)
+    val articlesEnabled = _articlesEnabled.asStateFlow()
+    fun toggleFavorite(id: String) {
+        val next = _favorites.value.toMutableSet().apply { if (!add(id)) remove(id) }.toSet()
+        prefs.edit().putStringSet("favorites", next).apply()
+        _favorites.value = next
+    }
     suspend fun load() {
         if (_stories.value.isNotEmpty()) return
         val loaded = withContext(Dispatchers.IO) {
@@ -34,6 +44,26 @@ class StoryLibrary(context: Context) {
             }.getOrElse { emptyList() }
         }
         _stories.value = loaded
+        val enabled = withContext(Dispatchers.IO) {
+            runCatching {
+                val connection = java.net.URL("https://www.cjym123.cn/api/info").openConnection() as java.net.HttpURLConnection
+                connection.connectTimeout = 8000; connection.readTimeout = 8000
+                try {
+                    val obj = connection.inputStream.bufferedReader().use { json.parseToJsonElement(it.readText()).jsonObject }
+                    check(obj["resultCode"]?.jsonPrimitive?.content == "200")
+                    (obj["data"]?.jsonObject?.get("storySwitch")?.jsonPrimitive?.content == "1").also {
+                        prefs.edit().putBoolean("articles_enabled", it).apply()
+                    }
+                } finally { connection.disconnect() }
+            }.getOrDefault(prefs.getBoolean("articles_enabled", false))
+        }
+        _articlesEnabled.value = enabled
+        if (enabled) {
+            val articles = withContext(Dispatchers.IO) {
+                runCatching { appContext.assets.open("StoryResources/contemporary_articles.json").bufferedReader().use { json.decodeFromString<List<StoryItem>>(it.readText()) } }.getOrDefault(emptyList())
+            }
+            _stories.value = (loaded + articles).shuffled()
+        }
     }
 
     suspend fun storyText(story: StoryItem): String {

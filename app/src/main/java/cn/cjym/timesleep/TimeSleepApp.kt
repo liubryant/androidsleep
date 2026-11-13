@@ -14,12 +14,14 @@ import cn.cjym.timesleep.service.StoryPlayerManager
 import cn.cjym.timesleep.service.UMengAnalytics
 
 class TimeSleepApp : Application() {
+    val wellness by lazy { cn.cjym.timesleep.data.wellness.WellnessRepository(this) }
     val settings: AppSettings by lazy { AppSettings(this) }
     val soundLibrary: SoundLibrary by lazy { SoundLibrary(this) }
     val storyLibrary: StoryLibrary by lazy { StoryLibrary(this) }
 
     override fun onCreate() {
         super.onCreate()
+        cn.cjym.timesleep.service.MindfulnessPlayer.init(this)
         AudioPlayerManager.init(this)
         StoryPlayerManager.init(this)
         SleepMonitorManager.init(this)

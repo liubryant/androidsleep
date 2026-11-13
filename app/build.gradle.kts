@@ -53,8 +53,8 @@ android {
     }
 
     applicationVariants.all {
-        outputs.all {
-            val createTime = SimpleDateFormat("yyyyMMddHHmm", Locale.CHINA).format(Date())
+                    outputs.all {
+                val createTime = SimpleDateFormat("yyyyMMddHHmm", Locale.CHINA).format(Date())
             (this as BaseVariantOutputImpl).outputFileName =
                 "TimeSleep-${buildType.name}-v${versionName}-$createTime.apk"
         }
@@ -104,6 +104,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.service)
@@ -120,6 +121,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.coil.compose)
     implementation(libs.androidx.media)
+    implementation(libs.androidx.health.connect.client)
     implementation("com.pangle.cn:mediation-sdk:7.6.1.1")
     implementation("com.umeng.umsdk:common:9.4.7")
     implementation("com.umeng.umsdk:asms:1.4.0")

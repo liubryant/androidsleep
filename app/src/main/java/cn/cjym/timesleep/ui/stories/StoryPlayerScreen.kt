@@ -10,6 +10,15 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +46,6 @@ import androidx.compose.material.icons.outlined.AutoStories
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +64,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import cn.cjym.timesleep.ui.shared.IOSSlider
 import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.data.model.StoryItem
@@ -72,7 +81,12 @@ fun StoryPlayerScreen(
     val context = LocalContext.current
     val app = context.applicationContext as TimeSleepApp
     val stories by app.storyLibrary.stories.collectAsState()
-    val story = stories.firstOrNull { it.id == storyId }
+    var selectedStoryId by rememberSaveable(storyId) { mutableStateOf(storyId) }
+    val story = stories.firstOrNull { it.id == selectedStoryId }
+    var timerMenu by remember {mutableStateOf(false)}
+    val timerMinutes by StoryPlayerManager.timerMinutes.collectAsState()
+    val playbackPrefs=remember {context.getSharedPreferences("story_playback",0)}
+    var randomOrder by rememberSaveable {mutableStateOf(playbackPrefs.getBoolean("random",false))}
 
     LaunchedEffect(Unit) {
         app.storyLibrary.load()
@@ -96,7 +110,15 @@ fun StoryPlayerScreen(
         StoryPlayerManager.play(story, text)
     }
 
+    LaunchedEffect(isPlayingThis,nowPlaying?.currentTime) {
+        val playing=nowPlaying
+        if(isCurrent && playing!=null && !playing.isPlaying && playing.duration>0 && playing.currentTime>=playing.duration && stories.size>1) {
+            selectedStoryId=if(randomOrder) stories.filter {it.id!=story.id}.random().id else stories[(stories.indexOf(story)+1)%stories.size].id
+        }
+    }
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        AssetCoverImage(story.coverAssetPath,Modifier.matchParentSize().blur(28.dp))
+        Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color(0x6B081226),Color(0xA8141730),Color(0xD60A0F21)))))
         val compact = maxHeight < 600.dp
         val narrow = maxWidth < 350.dp
         val coverSize = minOf(190.dp, maxOf(108.dp, minOf(maxWidth * 0.52f, maxHeight * 0.25f)))
@@ -108,6 +130,7 @@ fun StoryPlayerScreen(
                 .fillMaxSize()
                 .padding(top = if (compact) 2.dp else 8.dp),
         ) {
+            cn.cjym.timesleep.ui.wellness.WellnessTopBar(story.title,onBack) {Box {IconButton(onClick={timerMenu=true}) {Icon(Icons.Default.Timer,"定时",tint=Color.White)};DropdownMenu(timerMenu,{timerMenu=false}) {listOf(15,30,60).forEach {m->DropdownMenuItem({Text("$m 分钟")},{StoryPlayerManager.setSleepTimer(m);timerMenu=false})};DropdownMenuItem({Text("关闭定时")},{StoryPlayerManager.setSleepTimer(null);timerMenu=false})}}}
             RotatingStoryCover(
                 story = story,
                 isPlaying = isPlayingThis,
@@ -122,8 +145,9 @@ fun StoryPlayerScreen(
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(horizontal = if (narrow) 12.dp else 20.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)),
+                    .clip(RoundedCornerShape(22.dp))
+                    .border(1.dp,Color.White.copy(alpha=.16f),RoundedCornerShape(22.dp))
+                    .background(Color.Black.copy(alpha=.16f)),
             )
 
             StoryControls(
@@ -138,20 +162,16 @@ fun StoryPlayerScreen(
                     .padding(horizontal = if (narrow) 16.dp else 24.dp)
                     .padding(bottom = if (compact) 4.dp else 12.dp),
             )
+            Row(horizontalArrangement=Arrangement.spacedBy(10.dp),modifier=Modifier.padding(bottom=12.dp)) {
+                listOf(false,true).forEach {random->
+                    Surface(onClick={randomOrder=random;playbackPrefs.edit().putBoolean("random",random).apply()},shape=RoundedCornerShape(24.dp),color=Color.White.copy(alpha=if(randomOrder==random) .22f else .09f)) {
+                        Row(Modifier.padding(horizontal=14.dp,vertical=10.dp),horizontalArrangement=Arrangement.spacedBy(6.dp)) {Icon(if(random) Icons.Default.Shuffle else Icons.Default.Repeat,null,Modifier.size(18.dp),tint=Color.White);Text(if(random) "随机播放" else "顺序播放",fontSize=14.sp,color=Color.White)}
+                    }
+                }
+            }
         }
 
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 8.dp, top = 8.dp),
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "返回",
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+
     }
 }
 
@@ -289,7 +309,7 @@ private fun StoryControls(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier,
     ) {
-        Slider(
+        IOSSlider(
             value = displayValue.coerceIn(0.0, duration.coerceAtLeast(0.0)).toFloat(),
             onValueChange = {
                 isSeeking = true
@@ -317,30 +337,12 @@ private fun StoryControls(
             )
         }
 
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-            modifier = Modifier
-                .size(64.dp)
-                .clickable { StoryPlayerManager.toggle(story, storyText) },
-        ) {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Icon(
-                    imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = if (isPlaying) "暂停" else "播放",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(30.dp),
-                )
-            }
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceEvenly,verticalAlignment=Alignment.CenterVertically) {
+            TextButton(onClick={StoryPlayerManager.seek((currentTime-15).coerceAtLeast(0.0))}) {Text("↶ 15",fontSize=22.sp,color=Color.White)}
+            FilledIconButton(onClick={StoryPlayerManager.toggle(story,storyText)},modifier=Modifier.size(72.dp),colors=IconButtonDefaults.filledIconButtonColors(containerColor=Color.White,contentColor=Color.Black)) {Icon(if(isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,if(isPlaying) "暂停" else "播放",Modifier.size(30.dp))}
+            TextButton(onClick={StoryPlayerManager.seek((currentTime+15).coerceAtMost(duration))}) {Text("15 ↷",fontSize=22.sp,color=Color.White)}
         }
 
-        if (!StoryPlayerManager.isBundledOrCached(story)) {
-            Text(
-                text = "正在使用系统语音朗读本地故事文本",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 

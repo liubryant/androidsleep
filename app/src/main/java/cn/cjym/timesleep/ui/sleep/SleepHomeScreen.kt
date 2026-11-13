@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import cn.cjym.timesleep.data.model.SampleSleepSession
@@ -204,7 +205,7 @@ private fun SleepTopBar(
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = if(selected) 22.sp else 20.sp,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                         color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -276,10 +277,11 @@ private fun StatusPanel(isMonitoring: Boolean, currentDecibel: Double, onToggle:
             }
 
             Button(
+                shape = RoundedCornerShape(8.dp),
                 onClick = onToggle,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isMonitoring) Color(0xFFF44336) else MaterialTheme.colorScheme.primary,
+                    containerColor = Color(0xFF2B2B2B),
                 ),
             ) {
                 Icon(

@@ -9,7 +9,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +39,12 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import cn.cjym.timesleep.ui.wellness.*
+import cn.cjym.timesleep.service.MindfulnessPlayer
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,15 +72,15 @@ import cn.cjym.timesleep.ui.sounds.SoundHomeScreen
 import cn.cjym.timesleep.ui.stories.StoryHomeScreen
 import cn.cjym.timesleep.ui.stories.StoryPlayerScreen
 
-private sealed class MainTab(val route: String, val label: String) {
-    data object Sounds : MainTab("sounds", "声音")
-    data object Sleep : MainTab("sleep", "睡眠")
-    data object Stories : MainTab("stories", "故事")
-    data object Profile : MainTab("profile", "我的")
-
-    companion object {
-        val all = listOf(Sounds, Sleep, Stories, Profile)
-    }
+internal enum class MainTab(
+    val route: String,
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+) {
+    Sounds("sounds", "声音", Icons.Filled.GraphicEq),
+    Sleep("sleep", "睡眠", Icons.Filled.Bedtime),
+    Stories("stories", "故事", Icons.Filled.Book),
+    Profile("profile", "我的", Icons.Filled.AccountCircle);
 }
 
 private object StoryRoutes {
@@ -90,8 +100,17 @@ fun MainTabScreen() {
         }
     }
 
+    val entry by navController.currentBackStackEntryAsState()
+    val route = entry?.destination?.route
+    val topLevel = route in listOf("sounds", "sleep", "stories", "profile")
+    val meditation by MindfulnessPlayer.state.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val activity = context as? cn.cjym.timesleep.MainActivity
+    LaunchedEffect(activity?.pendingRoute) {
+        activity?.pendingRoute?.let { requested -> navController.navigate(requested) { launchSingleTop=true }; activity.consumeRoute() }
+    }
     Scaffold(
-        bottomBar = { MainBottomBar(navController) },
+        bottomBar = { if (topLevel) MainBottomBar(navController) },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
@@ -101,7 +120,7 @@ fun MainTabScreen() {
                     .fillMaxSize()
                     .padding(innerPadding),
             ) {
-                composable(MainTab.Sounds.route) { SoundHomeScreen() }
+                composable(MainTab.Sounds.route) { SoundHomeScreen(navigate = { navController.navigate(it) }) }
                 composable(MainTab.Sleep.route) { SleepHomeScreen() }
                 composable(MainTab.Stories.route) {
                     StoryHomeScreen(onOpenStory = { storyId ->
@@ -115,11 +134,23 @@ fun MainTabScreen() {
                         onBack = { navController.popBackStack() },
                     )
                 }
-                composable(MainTab.Profile.route) { ProfileScreen() }
+                composable(MainTab.Profile.route) { ProfileScreen(onExplore = { navController.navigate(it) }) }
+                composable("wellness") { WellnessHubScreen({ navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("assessment/{kind}") { AssessmentScreen(it.arguments?.getString("kind") ?: "mood", { navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("history") { WellnessHistoryScreen({ navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("record/{id}") { WellnessRecordScreen(it.arguments?.getString("id").orEmpty(), { navController.popBackStack() }) }
+                composable("inspiration") { InspirationScreen({ navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("breathing") { BreathingScreen { navController.popBackStack() } }
+                composable("meditations") { MeditationHomeScreen({ navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("meditation/{id}") { MeditationPlayerScreen(it.arguments?.getString("id").orEmpty(), { navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("voices") { VoiceCharactersScreen { navController.popBackStack() } }
+                composable("health") { HealthInsightScreen { navController.popBackStack() } }
+                composable("devices") { DevicesScreen({ navController.popBackStack() }, { navController.navigate(it) }) }
+                composable("membership") { MembershipScreen { navController.popBackStack() } }
             }
 
             AnimatedVisibility(
-                visible = storyPlaying != null || nowPlaying != null,
+                visible = (topLevel || route == "meditations") && (storyPlaying != null || nowPlaying != null || meditation != null),
                 enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
                 modifier = Modifier
@@ -127,7 +158,21 @@ fun MainTabScreen() {
                     .padding(bottom = innerPadding.calculateBottomPadding() + 8.dp)
                     .padding(horizontal = 16.dp),
             ) {
-                if (storyPlaying != null) {
+                if (meditation != null) {
+                    meditation?.let { playing ->
+                        Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surface.copy(alpha = .98f), modifier = Modifier.clickable { navController.navigate("meditation/${playing.track.id}") }) {
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                AssetCoverImage("SoundResources/Mindfulness/Covers/cover-%02d.jpg".format(playing.track.cover), Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)))
+                                Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                                    Text(playing.track.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(playing.remainingSeconds?.let { timeText(it.toFloat()) + " 后暂停" } ?: playing.track.subtitle, style = MaterialTheme.typography.labelSmall)
+                                }
+                                IconButton(onClick = { MindfulnessPlayer.toggle() }) { Icon(if (playing.playing) Icons.Default.Pause else Icons.Default.PlayArrow, "播放或暂停") }
+                                IconButton(onClick = { MindfulnessPlayer.stop() }) { Icon(Icons.Default.Close, "停止") }
+                            }
+                        }
+                    }
+                } else if (storyPlaying != null) {
                     storyPlaying?.let { playing -> GlobalStoryMiniPlayer(playing = playing) }
                 } else {
                     nowPlaying?.let { playing -> GlobalMiniPlayer(playing = playing) }
@@ -143,53 +188,33 @@ private fun MainBottomBar(navController: NavHostController) {
     val currentDestination = backStackEntry?.destination
     val currentRoute = currentDestination?.route
 
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-        tonalElevation = 0.dp,
+    Row(
+        Modifier.fillMaxWidth().background(Color(0xFF17181C))
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .height(56.dp).padding(horizontal=12.dp,vertical=4.dp),
+        horizontalArrangement=Arrangement.spacedBy(8.dp),
+        verticalAlignment=Alignment.CenterVertically,
     ) {
-        MainTab.all.forEach { tab ->
-            val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true ||
-                (tab == MainTab.Stories && currentRoute == StoryRoutes.Detail)
-            val color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-
-            NavigationBarItem(
-                selected = selected,
-                onClick = {
-                    navController.navigate(tab.route) {
-                        popUpTo(MainTab.Sounds.route) {
-                            saveState = true
+        MainTab.entries.forEach {tab ->
+            val selected=currentDestination?.hierarchy?.any {it.route==tab.route}==true || (tab==MainTab.Stories && currentRoute==StoryRoutes.Detail)
+            val color by animateColorAsState(if(selected) Color(0xFF62ACFF) else Color(0xFF979AA3),label="tabTint")
+            val background by animateColorAsState(if(selected) Color(0xFF20344E) else Color.Transparent,label="tabBackground")
+            Column(
+                Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(20.dp))
+                    .background(background)
+                    .selectable(selected=selected,role=Role.Tab,onClick={
+                        navController.navigate(tab.route) {
+                            popUpTo(MainTab.Sounds.route) {saveState=true}
+                            launchSingleTop=true
+                            restoreState=true
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                icon = {
-                    Icon(
-                        imageVector = when (tab) {
-                            MainTab.Sounds -> Icons.Filled.GraphicEq
-                            MainTab.Sleep -> Icons.Filled.Bedtime
-                            MainTab.Stories -> Icons.Filled.Book
-                            MainTab.Profile -> Icons.Filled.AccountCircle
-                        },
-                        contentDescription = tab.label,
-                        modifier = Modifier.size(22.dp),
-                    )
-                },
-                label = {
-                    Text(
-                        text = tab.label,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = color,
-                    selectedTextColor = color,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                ),
-            )
+                    }),
+                horizontalAlignment=Alignment.CenterHorizontally,
+                verticalArrangement=Arrangement.spacedBy(2.dp,Alignment.CenterVertically),
+            ) {
+                Icon(tab.icon,null,Modifier.size(22.dp),tint=color)
+                Text(tab.label,fontSize=10.sp,lineHeight=12.sp,fontWeight=if(selected) FontWeight.SemiBold else FontWeight.Normal,color=color)
+            }
         }
     }
 }

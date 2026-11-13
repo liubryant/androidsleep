@@ -39,6 +39,13 @@ object StoryPlayerManager {
     private lateinit var appContext: Context
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    private var sleepTimerJob: Job? = null
+    private val _timerMinutes=MutableStateFlow<Int?>(null)
+    val timerMinutes: StateFlow<Int?> = _timerMinutes.asStateFlow()
+    fun setSleepTimer(minutes:Int?) {
+        sleepTimerJob?.cancel(); _timerMinutes.value=minutes
+        sleepTimerJob=minutes?.let {scope.launch {delay(it*60_000L);pause();_timerMinutes.value=null}}
+    }
     private var mediaPlayer: MediaPlayer? = null
     private var textToSpeech: TextToSpeech? = null
     private var ttsReady = false
@@ -46,6 +53,7 @@ object StoryPlayerManager {
     private var activeSpeechText = ""
     private var speechStartCharacter = 0
     private var speechCurrentCharacter = 0
+    private var speechChunkEnd = 0
     private var activeUtteranceId: String? = null
     private var pendingSpeechCharacter: Int? = null
 
@@ -72,10 +80,13 @@ object StoryPlayerManager {
                 override fun onDone(utteranceId: String?) {
                     if (utteranceId != activeUtteranceId) return
                     scope.launch {
-                        _nowPlaying.update { current ->
-                            current?.copy(isPlaying = false, currentTime = current.duration)
+                        if (utteranceId != activeUtteranceId) return@launch
+                        if (speechChunkEnd < activeSpeechText.length) {
+                            speakFrom(speechChunkEnd)
+                        } else {
+                            _nowPlaying.update { current -> current?.copy(isPlaying = false, currentTime = current.duration) }
+                            stopProgress()
                         }
-                        stopProgress()
                     }
                 }
 
@@ -140,6 +151,7 @@ object StoryPlayerManager {
         if (trimmed.isBlank()) return
         stopInternal(clearState = false)
         AudioPlayerManager.stop()
+        MindfulnessPlayer.stop()
 
         activeSpeechText = trimmed
         speechStartCharacter = 0
@@ -168,6 +180,8 @@ object StoryPlayerManager {
     }
 
     fun resume(story: StoryItem, text: String) {
+        AudioPlayerManager.stop()
+        MindfulnessPlayer.stop()
         val current = _nowPlaying.value
         if (current?.story?.id != story.id) {
             toggle(story, text)
@@ -206,6 +220,7 @@ object StoryPlayerManager {
     private suspend fun playAudio(story: StoryItem) {
         stopInternal(clearState = false)
         AudioPlayerManager.stop()
+        MindfulnessPlayer.stop()
         val file = withContext(Dispatchers.IO) { resolveAudioFile(story) } ?: run {
             _nowPlaying.value = null
             return
@@ -256,8 +271,9 @@ object StoryPlayerManager {
         speechCurrentCharacter = start
         activeUtteranceId = UUID.randomUUID().toString()
         textToSpeech?.stop()
+        speechChunkEnd = (start + TextToSpeech.getMaxSpeechInputLength() - 1).coerceAtMost(text.length)
         textToSpeech?.speak(
-            text.substring(start),
+            text.substring(start, speechChunkEnd),
             TextToSpeech.QUEUE_FLUSH,
             null,
             activeUtteranceId,
