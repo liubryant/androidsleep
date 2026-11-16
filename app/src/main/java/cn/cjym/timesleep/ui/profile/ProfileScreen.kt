@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -75,7 +76,7 @@ fun ProfileScreen(modifier: Modifier = Modifier, onExplore: (String) -> Unit = {
         composable("home") {
             ProfileHomeScreen(
                 onExplore = onExplore,
-                onLogin = { navController.navigate("login") },
+                onLogin = { onExplore("login") },
                 onSetPassword = { navController.navigate("set_password") },
                 onDeleteAccount = { navController.navigate("delete_account") },
                 onLegal = { type -> navController.navigate("legal/$type") },
@@ -111,6 +112,13 @@ private fun ProfileHomeScreen(
     val context = LocalContext.current
     val app = context.applicationContext as TimeSleepApp
     val scope = rememberCoroutineScope()
+    val selectedBlue = Color(0xFF0A84FF)
+    val toggleColors = SwitchDefaults.colors(
+        checkedTrackColor = selectedBlue,
+        checkedBorderColor = selectedBlue,
+        checkedThumbColor = Color.White,
+        uncheckedThumbColor = Color.White,
+    )
 
     val isLoggedIn by app.settings.isLoggedIn.collectAsState(initial = false)
     val phoneNumber by app.settings.phoneNumber.collectAsState(initial = "")
@@ -154,8 +162,6 @@ private fun ProfileHomeScreen(
         MembershipCard { onExplore("membership") }
         ProfileSection(title = "权限") {
             InfoRow(icon = Icons.Filled.Mic, label = "麦克风", value = "使用时申请")
-            LinkRow("健康连接", { onExplore("health") })
-            LinkRow("继续", { onExplore("health") })
         }
 
         ProfileSection(title = "睡眠监测") {
@@ -167,10 +173,7 @@ private fun ProfileHomeScreen(
                 Switch(
                     checked = saveAudioClips,
                     onCheckedChange = { value -> scope.launch { app.settings.setSaveAudioClips(value) } },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        uncheckedThumbColor = Color.White,
-                    ),
+                    colors = toggleColors,
                 )
             }
 
@@ -187,6 +190,7 @@ private fun ProfileHomeScreen(
                     value = sensitivity.toFloat(),
                     onValueChange = { value -> scope.launch { app.settings.setSensitivity(value.toDouble()) } },
                     valueRange = 0.3f..0.95f,
+                    tint = selectedBlue,
                 )
             }
         }
@@ -194,7 +198,7 @@ private fun ProfileHomeScreen(
         ProfileSection(title = "提醒") {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {Text("故事提醒");Text("每天 21:00、22:00 精选故事",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)}
-                Switch(checked=reminderEnabled,onCheckedChange={ enabled ->
+                Switch(checked=reminderEnabled,colors=toggleColors,onCheckedChange={ enabled ->
                     if(enabled && android.os.Build.VERSION.SDK_INT>=33 && androidx.core.content.ContextCompat.checkSelfPermission(context,android.Manifest.permission.POST_NOTIFICATIONS)!=android.content.pm.PackageManager.PERMISSION_GRANTED) notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                     else {reminderEnabled=enabled;cn.cjym.timesleep.service.StoryReminder.setEnabled(context,enabled)}
                 })
@@ -207,7 +211,7 @@ private fun ProfileHomeScreen(
                 icon = Icons.Filled.Delete,
                 label = "清除数据",
                 onClick = { showClearAlert = true },
-                labelColor = MaterialTheme.colorScheme.error,
+                labelColor = Color(0xFFFF453A),
             )
         }
 
@@ -256,27 +260,72 @@ private fun ProfileHeader(
 ) {
     var accountMenu by remember { mutableStateOf(false) }
     val background = Brush.horizontalGradient(listOf(Color(0xFF241B18),Color(0xFF3B2920),Color(0xFF5A402B)))
-    Row(Modifier.fillMaxWidth().height(116.dp).clip(RoundedCornerShape(24.dp)).background(background).clickable { if(isLoggedIn) accountMenu=true else onLogin() }.padding(horizontal=18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(16.dp)) {
-        Box(Modifier.size(64.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Brush.linearGradient(listOf(Color(0xFF7657F5),Color(0xFFC65FD0)))),contentAlignment=Alignment.Center) {Icon(Icons.Default.AccountCircle,null,Modifier.size(32.dp),tint=Color.White)}
-        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)) {
-            Text(if(isLoggedIn) (if(phoneNumber.length>=7) phoneNumber.take(3)+"****"+phoneNumber.takeLast(4) else phoneNumber) else "登录时光睡眠",fontSize=19.sp,fontWeight=FontWeight.SemiBold,color=Color.White)
-            Text(if(isLoggedIn) "账号已登录" else "登录后同步睡眠数据与会员权益",fontSize=12.sp,color=Color(0xFFE3CBB2))
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 100.dp)
+            .clip(RoundedCornerShape(24.dp)).background(background)
+            .clickable { if (isLoggedIn) accountMenu = true else onLogin() }
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            Modifier.size(48.dp).clip(androidx.compose.foundation.shape.CircleShape)
+                .background(Brush.linearGradient(listOf(Color(0xFF7657F5), Color(0xFFC65FD0)))),
+            contentAlignment = Alignment.Center,
+        ) { Icon(Icons.Default.AccountCircle, null, Modifier.size(26.dp), tint = Color.White) }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                if (isLoggedIn) (if (phoneNumber.length >= 7) phoneNumber.take(3) + "****" + phoneNumber.takeLast(4) else phoneNumber) else "登录时光睡眠",
+                fontSize = 16.sp, lineHeight = 21.sp, fontWeight = FontWeight.SemiBold, color = Color.White,
+            )
+            Text(
+                if (isLoggedIn) "账号已登录" else "登录后同步睡眠数据与会员权益",
+                fontSize = 11.sp, lineHeight = 16.sp, color = Color(0xFFE3CBB2),
+            )
         }
-        Text(if(isLoggedIn) "账号" else "登录",Modifier.clip(RoundedCornerShape(24.dp)).background(Color(0xFF7658F7)).padding(horizontal=16.dp,vertical=10.dp),color=Color.White)
+        Text(
+            if (isLoggedIn) "账号" else "登录",
+            Modifier.clip(RoundedCornerShape(16.dp)).background(Color(0xFF0A84FF))
+                .padding(horizontal = 12.dp, vertical = 7.dp),
+            fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1, color = Color.White,
+        )
     }
-    if(accountMenu) AlertDialog(onDismissRequest={accountMenu=false},title={Text("账号管理")},text={Column {TextButton(onClick={accountMenu=false;onSetPassword()}) {Text("修改密码")};TextButton(onClick={accountMenu=false;onLogout()}) {Text("退出登录")}}},confirmButton={TextButton(onClick={accountMenu=false}) {Text("关闭")}})
+    if (accountMenu && isLoggedIn) AccountManagementDialog(
+        phoneNumber = phoneNumber,
+        onDismiss = { accountMenu = false },
+        onLogout = { accountMenu = false; onLogout() },
+    )
 }
 
-@Composable private fun MembershipCard(onClick:()->Unit) {
-    val gold=Color(0xFFEECC9A)
-    Column(Modifier.fillMaxWidth().height(134.dp).clip(RoundedCornerShape(22.dp)).background(Brush.horizontalGradient(listOf(Color(0xFF241B18),Color(0xFF3B2920),Color(0xFF5A402B)))).clickable(onClick=onClick).padding(18.dp),verticalArrangement=Arrangement.SpaceBetween) {
-        Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)) {
-            Text("✦",Modifier.clip(androidx.compose.foundation.shape.CircleShape).background(gold).padding(12.dp),color=Color(0xFF4B2A12))
-            Column(Modifier.weight(1f)) {Text("时光睡眠会员",style=MaterialTheme.typography.titleMedium,color=Color(0xFFFFF2D2));Text("开通会员，解锁全部正念内容",style=MaterialTheme.typography.labelSmall,color=gold)}
-            Text("查看权益",Modifier.clip(RoundedCornerShape(24.dp)).background(gold).padding(horizontal=12.dp,vertical=9.dp),style=MaterialTheme.typography.labelSmall,color=Color(0xFF4F2D16))
+@Composable private fun MembershipCard(onClick: () -> Unit) {
+    val gold = Color(0xFFEECC9A)
+    Column(
+        Modifier.fillMaxWidth().heightIn(min = 116.dp).clip(RoundedCornerShape(24.dp))
+            .background(Brush.horizontalGradient(listOf(Color(0xFF241B18), Color(0xFF3B2920), Color(0xFF5A402B))))
+            .clickable(onClick = onClick).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Box(
+                Modifier.size(48.dp).clip(androidx.compose.foundation.shape.CircleShape).background(gold),
+                contentAlignment = Alignment.Center,
+            ) { Text("✦", fontSize = 22.sp, color = Color(0xFF4B2A12)) }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("时光睡眠会员", fontSize = 16.sp, lineHeight = 21.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFFFF2D2))
+                Text("开通会员，解锁全部正念内容", fontSize = 11.sp, lineHeight = 16.sp, color = gold)
+            }
+            Text(
+                "查看权益", Modifier.clip(RoundedCornerShape(16.dp)).background(gold)
+                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1, color = Color(0xFF4F2D16),
+            )
         }
-        HorizontalDivider(color=Color.White.copy(alpha=.13f))
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {listOf("✦ 全部正念冥想","✦ 自然声音畅听","✦ 专享内容更新").forEach {Text(it,style=MaterialTheme.typography.labelSmall,color=gold)}}
+        HorizontalDivider(color = Color.White.copy(alpha = .13f))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("✦ 全部正念冥想", "✦ 自然声音畅听", "✦ 专享内容更新").forEach {
+                Text(it, Modifier.weight(1f), fontSize = 10.sp, lineHeight = 15.sp, color = gold)
+            }
+        }
     }
 }
 

@@ -19,7 +19,7 @@ object UMengAnalytics {
     private var appContext: Context? = null
 
     /**
-     * 不采集任何个人信息，可在用户同意隐私协议前调用，在 [TimeSleepApp.onCreate] 里无条件执行。
+     * 推迟到首页显示且用户同意隐私协议后执行，避免阻塞启动首帧。
      */
     fun preInit(context: Context) {
         UMConfigure.setLogEnabled(BuildConfig.DEBUG)
@@ -32,6 +32,7 @@ object UMengAnalytics {
         val application = context.applicationContext
         appContext = application
 
+        preInit(application)
         UMConfigure.submitPolicyGrantResult(application, true)
         UMConfigure.init(
             application,

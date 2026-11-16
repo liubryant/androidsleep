@@ -4,4 +4,7 @@
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
         <item name="android:windowBackground">@android:color/black</item>
     </style>
+    <style name="Theme.TimeSleep.Starting" parent="Theme.TimeSleep">
+        <item name="android:windowBackground">@drawable/startup_background</item>
+    </style>
 </resources>

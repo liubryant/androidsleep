@@ -73,12 +73,18 @@ import kotlinx.coroutines.launch
     Column(Modifier.fillMaxSize().background(Color.Black)) {
         WellnessTopBar("自在正念",back)
         LazyColumn(contentPadding=PaddingValues(bottom=34.dp),verticalArrangement=Arrangement.spacedBy(28.dp)) {
-            item {Column(Modifier.padding(horizontal=20.dp).padding(top=38.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)) {
-                Box(Modifier.fillMaxWidth().height(164.dp)) {
-                    Box(Modifier.fillMaxSize().clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).background(androidx.compose.ui.graphics.Brush.linearGradient(colors[banner]))) {
-                        Column(Modifier.padding(start=26.dp,end=150.dp,top=46.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {Text(titles[banner],fontSize=18.sp,fontWeight=androidx.compose.ui.text.font.FontWeight.Bold,color=Color.White,maxLines=1,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis);Text(details[banner],fontSize=13.sp,lineHeight=19.sp,color=Color.White.copy(alpha=.82f),maxLines=2,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis)}
+            item {Column(Modifier.padding(horizontal=20.dp).padding(top=8.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                BoxWithConstraints(Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).background(androidx.compose.ui.graphics.Brush.linearGradient(colors[banner]))) {
+                    val presenterWidth = (maxWidth * .28f).coerceAtMost(110.dp)
+                    Column(
+                        Modifier.fillMaxWidth().heightIn(min=164.dp)
+                            .padding(start=18.dp,end=presenterWidth+12.dp,top=18.dp,bottom=18.dp),
+                        verticalArrangement=Arrangement.spacedBy(8.dp,Alignment.CenterVertically),
+                    ) {
+                        Text(titles[banner],fontSize=18.sp,lineHeight=24.sp,fontWeight=androidx.compose.ui.text.font.FontWeight.Bold,color=Color.White)
+                        Text(details[banner],fontSize=13.sp,lineHeight=19.sp,color=Color.White.copy(alpha=.82f))
                     }
-                    AsyncImage("file:///android_asset/mindfulness_presenter.png",null,Modifier.align(Alignment.BottomEnd).requiredSize(136.dp,205.dp),contentScale=ContentScale.Fit)
+                    AsyncImage("file:///android_asset/mindfulness_presenter.png",null,Modifier.align(Alignment.BottomEnd).width(presenterWidth).height(164.dp),contentScale=ContentScale.Fit)
                 }
                 Row(horizontalArrangement=Arrangement.spacedBy(7.dp)) {repeat(3) {index->Box(Modifier.width(if(index==banner) 20.dp else 7.dp).height(7.dp).clip(CircleShape).background(Color.White.copy(alpha=if(index==banner) .72f else .16f)).clickable {banner=index})}}
             }}

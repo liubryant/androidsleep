@@ -5,6 +5,8 @@
 package cn.cjym.timesleep.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -116,6 +118,11 @@ fun MainTabScreen() {
             NavHost(
                 navController = navController,
                 startDestination = MainTab.Sounds.route,
+                // Replace pages immediately so outgoing content cannot bleed through the next tab.
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
@@ -134,6 +141,7 @@ fun MainTabScreen() {
                         onBack = { navController.popBackStack() },
                     )
                 }
+                composable("login") { cn.cjym.timesleep.ui.profile.LoginScreen(onBack = { navController.popBackStack() }) }
                 composable(MainTab.Profile.route) { ProfileScreen(onExplore = { navController.navigate(it) }) }
                 composable("wellness") { WellnessHubScreen({ navController.popBackStack() }, { navController.navigate(it) }) }
                 composable("assessment/{kind}") { AssessmentScreen(it.arguments?.getString("kind") ?: "mood", { navController.popBackStack() }, { navController.navigate(it) }) }
@@ -197,8 +205,8 @@ private fun MainBottomBar(navController: NavHostController) {
     ) {
         MainTab.entries.forEach {tab ->
             val selected=currentDestination?.hierarchy?.any {it.route==tab.route}==true || (tab==MainTab.Stories && currentRoute==StoryRoutes.Detail)
-            val color by animateColorAsState(if(selected) Color(0xFF62ACFF) else Color(0xFF979AA3),label="tabTint")
-            val background by animateColorAsState(if(selected) Color(0xFF20344E) else Color.Transparent,label="tabBackground")
+            val color by animateColorAsState(if(selected) Color(0xFF0A84FF) else Color(0xFF979AA3),label="tabTint")
+            val background by animateColorAsState(if(selected) Color(0xFF333336) else Color.Transparent,label="tabBackground")
             Column(
                 Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(20.dp))
                     .background(background)

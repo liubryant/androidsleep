@@ -62,6 +62,11 @@ object StoryPlayerManager {
 
     fun init(context: Context) {
         appContext = context.applicationContext
+    }
+
+    // Bind the speech engine only when a story actually needs text-to-speech.
+    private fun ensureSpeechEngine() {
+        if (textToSpeech != null) return
         textToSpeech = TextToSpeech(appContext) { status ->
             ttsReady = status == TextToSpeech.SUCCESS
             if (ttsReady) {
@@ -259,6 +264,7 @@ object StoryPlayerManager {
         if (!ttsReady) {
             pendingSpeechCharacter = character
             _nowPlaying.update { it?.copy(isPlaying = false) }
+            ensureSpeechEngine()
             return
         }
         val start = character.coerceIn(0, text.length)

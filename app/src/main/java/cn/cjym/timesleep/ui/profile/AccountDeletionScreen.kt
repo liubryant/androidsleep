@@ -5,6 +5,7 @@
 package cn.cjym.timesleep.ui.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -159,14 +160,19 @@ fun AccountDeletionScreen(onBack: () -> Unit, onDeleted: () -> Unit, modifier: M
                             isSendingCode = false
                         }
                     },
-                    modifier = Modifier.width(96.dp),
+                    modifier = Modifier.width(128.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.White,
+                        disabledContentColor = Color.White.copy(alpha = 0.5f),
+                    ),
                 ) {
                     if (isSendingCode) {
                         CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                     } else if (countdown > 0) {
                         Text("${countdown}s")
                     } else {
-                        Text("获取验证码")
+                        Text("获取验证码", maxLines = 1)
                     }
                 }
             }

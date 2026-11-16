@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.TimeSleep.Starting" parent="Theme.TimeSleep">
+        <item name="android:windowBackground">@drawable/startup_background</item>
+        <item name="android:windowSplashScreenBackground">@android:color/black</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/startup_logo</item>
+    </style>
+</resources>

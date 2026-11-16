@@ -12,7 +12,7 @@
     <string name="vip_wechat_pay">微信支付</string>
     <string name="vip_alipay_pay">支付宝支付</string>
     <string name="vip_notice_title">温馨提示</string>
-    <string name="vip_notice_body">1. 安卓会员购买暂未开放。\n2. 套餐价格以正式开放后的页面为准。\n3. 当前仍可使用免费助眠内容。</string>
+    <string name="vip_notice_body">1. 会员为虚拟服务，请确认套餐后支付。\n2. 支付结果以服务器确认为准，确认前请勿重复付款。\n3. 会员权益绑定当前登录手机号。</string>
     <string name="vip_open_now">立即开通</string>
     <string name="vip_price_placeholder">￥--</string>
     <string name="vip_agreement_hint">请阅读并同意《用户协议》《隐私政策》</string>

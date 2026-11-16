@@ -46,8 +46,8 @@ android {
         applicationId = "cn.cjym.timesleep"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -104,6 +104,7 @@ android {
 }
 
 dependencies {
+    implementation("com.alipay.sdk:alipaysdk-android:15.8.11@aar")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

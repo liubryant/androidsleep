@@ -10,6 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
 
@@ -23,15 +25,18 @@ class StoryLibrary(context: Context) {
     private val prefs = appContext.getSharedPreferences("story_library", Context.MODE_PRIVATE)
     private val _favorites = MutableStateFlow(prefs.getStringSet("favorites", emptySet())!!.toSet())
     val favorites = _favorites.asStateFlow()
-    private val _articlesEnabled = MutableStateFlow(false)
+    private val _articlesEnabled = MutableStateFlow(prefs.getBoolean("articles_enabled", false))
     val articlesEnabled = _articlesEnabled.asStateFlow()
     fun toggleFavorite(id: String) {
         val next = _favorites.value.toMutableSet().apply { if (!add(id)) remove(id) }.toSet()
         prefs.edit().putStringSet("favorites", next).apply()
         _favorites.value = next
     }
-    suspend fun load() {
-        if (_stories.value.isNotEmpty()) return
+    private val loadMutex = Mutex()
+    private var loadedSuccessfully = false
+
+    suspend fun load() = loadMutex.withLock {
+        if (loadedSuccessfully) return@withLock
         val loaded = withContext(Dispatchers.IO) {
             runCatching {
                 appContext.assets.open("StoryResources/stories_manifest.json").use { input ->
@@ -43,7 +48,11 @@ class StoryLibrary(context: Context) {
                 }
             }.getOrElse { emptyList() }
         }
-        _stories.value = loaded
+        val cachedEnabled = _articlesEnabled.value
+        val localArticles = withContext(Dispatchers.IO) {
+            runCatching { appContext.assets.open("StoryResources/contemporary_articles.json").bufferedReader().use { json.decodeFromString<List<StoryItem>>(it.readText()) } }.getOrDefault(emptyList())
+        }
+        _stories.value = if (cachedEnabled) loaded + localArticles else loaded
         val enabled = withContext(Dispatchers.IO) {
             runCatching {
                 val connection = java.net.URL("https://www.cjym123.cn/api/info").openConnection() as java.net.HttpURLConnection
@@ -58,12 +67,9 @@ class StoryLibrary(context: Context) {
             }.getOrDefault(prefs.getBoolean("articles_enabled", false))
         }
         _articlesEnabled.value = enabled
-        if (enabled) {
-            val articles = withContext(Dispatchers.IO) {
-                runCatching { appContext.assets.open("StoryResources/contemporary_articles.json").bufferedReader().use { json.decodeFromString<List<StoryItem>>(it.readText()) } }.getOrDefault(emptyList())
-            }
-            _stories.value = (loaded + articles).shuffled()
-        }
+        // Preserve visible card positions when the remote catalog switch arrives.
+        _stories.value = if (enabled) loaded + localArticles else loaded
+        loadedSuccessfully = loaded.isNotEmpty()
     }
 
     suspend fun storyText(story: StoryItem): String {

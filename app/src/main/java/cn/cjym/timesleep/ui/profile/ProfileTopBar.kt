@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun ProfileTopBar(title: String, onBack: () -> Unit) {
+internal fun ProfileTopBar(title: String, onBack: () -> Unit, titleScale: Float = 1f) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,7 +40,9 @@ internal fun ProfileTopBar(title: String, onBack: () -> Unit) {
 
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontSize = MaterialTheme.typography.titleLarge.fontSize * titleScale,
+            ),
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.align(Alignment.Center),
         )

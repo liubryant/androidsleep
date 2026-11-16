@@ -68,7 +68,7 @@ internal fun homeGreeting(hour:Int):String = when(hour) {
             HomeWeatherBadge()
             BoxWithConstraints(Modifier.weight(1f)) {
                 // Preserve the full iOS greeting on narrower Android displays.
-                Text(homeGreeting(hour),fontSize=if(maxWidth<200.dp) 19.sp else 23.sp,fontWeight=FontWeight.Bold,color=Color.White,maxLines=1)
+                Text(homeGreeting(hour),fontSize=if(maxWidth<200.dp) 16.sp else 20.sp,fontWeight=FontWeight.Bold,color=Color.White,maxLines=1)
             }
             Box {
                 IconButton(onClick={menu=true},modifier=Modifier.size(44.dp)) {Icon(Icons.Default.Tune,"声音筛选与定时",Modifier.size(23.dp),tint=Color.White)}

@@ -177,5 +177,43 @@ object MindfulnessPlayer {
 
 /** Entitlements must come from the Android billing backend; never infer them from a local switch. */
 object MembershipAccess {
-    val active: StateFlow<Boolean> = MutableStateFlow(false).asStateFlow()
+    private val mutableActive = MutableStateFlow(false)
+    val active: StateFlow<Boolean> = mutableActive.asStateFlow()
+    private var currentToken = ""
+    private var generation = 0
+    private var requestCounter = 0
+    private var expiryDeadline: Long? = null
+    private var expiryJob: kotlinx.coroutines.Job? = null
+    private val entitlementScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
+    @Synchronized fun reset() {
+        generation++; currentToken = ""; mutableActive.value = false
+        expiryJob?.cancel(); expiryJob = null; expiryDeadline = null
+    }
+    suspend fun refresh(token: String): Boolean {
+        val (requestGeneration, requestId) = synchronized(this) {
+            if (token != currentToken) { reset(); currentToken = token }
+            generation to ++requestCounter
+        }
+        if (token.isBlank()) return false
+        val result = MembershipPayment.membership(token)
+        synchronized(this) {
+            if (generation == requestGeneration && currentToken == token && requestId == requestCounter) {
+                mutableActive.value = result.active
+                expiryJob?.cancel()
+                val expires = runCatching {
+                    java.time.LocalDateTime.parse(result.expiresAt,
+                        java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        .atZone(java.time.ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli()
+                }.getOrNull()
+                expiryDeadline = expires
+                if (result.active && expires != null) expiryJob = entitlementScope.launch {
+                    kotlinx.coroutines.delay((expires - System.currentTimeMillis()).coerceAtLeast(0))
+                    synchronized(this@MembershipAccess) {
+                        if (generation == requestGeneration && expiryDeadline == expires) mutableActive.value = false
+                    }
+                }
+            }
+        }
+        return result.active
+    }
 }

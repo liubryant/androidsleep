@@ -218,21 +218,40 @@ import java.util.Locale
             if(remaining==0) {running=false;completed=true;prefs.edit().putLong("totalSeconds",prefs.getLong("totalSeconds",0)+duration).apply()}
         }
     }
-    val scale by animateFloatAsState(if(step<6) 1.12f else .82f,tween(if(running) 3800 else 400),label="breathing")
+    val scale by animateFloatAsState(if(!running) 1f else if(step<6) 1.12f else .82f,tween(if(running) 3800 else 400),label="breathing")
     Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color(0xFF0B1B1C),Color(0xFF0B111A))))) {
-        Column(horizontalAlignment=Alignment.CenterHorizontally) {
+        Column(Modifier.fillMaxSize(),horizontalAlignment=Alignment.CenterHorizontally) {
             WellnessTopBar("呼吸练习",back)
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(24.dp)) {
-                SingleChoiceSegmentedButtonRow {listOf(1,3,5).forEachIndexed {index,m->SegmentedButton(selected=duration==m*60,onClick={duration=m*60;remaining=duration;step=0;running=false;completed=false},shape=SegmentedButtonDefaults.itemShape(index,3)) {Text("$m 分钟")}}}
-                Spacer(Modifier.height(18.dp))
-                Box(Modifier.size(230.dp).scale(scale).background(Color(0xFF588C88).copy(.4f),CircleShape),contentAlignment=Alignment.Center) {
-                    Column(horizontalAlignment=Alignment.CenterHorizontally) {Text(if(completed) "练习完成" else if(!running) "准备好了吗" else if(step<4) "慢慢吸气" else if(step<6) "轻轻停留" else "缓缓呼气",style=MaterialTheme.typography.headlineSmall);Text("%02d:%02d".format(remaining/60,remaining%60),Modifier.padding(top=12.dp))}
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                val compact = maxHeight < 600.dp
+                val circleSize = ((maxWidth - 48.dp) / 1.15f).coerceAtMost(if(compact) 190.dp else 230.dp)
+                Column(
+                    Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=24.dp,vertical=12.dp),
+                    horizontalAlignment=Alignment.CenterHorizontally,
+                    verticalArrangement=Arrangement.spacedBy(if(compact) 16.dp else 24.dp),
+                ) {
+                    SingleChoiceSegmentedButtonRow(Modifier.widthIn(max=420.dp).fillMaxWidth()) {
+                        listOf(1,3,5).forEachIndexed {index,m->
+                            SegmentedButton(selected=duration==m*60,onClick={duration=m*60;remaining=duration;step=0;running=false;completed=false},shape=SegmentedButtonDefaults.itemShape(index,3)) {
+                                Text("$m 分钟",fontSize=14.sp,maxLines=1)
+                            }
+                        }
+                    }
+                    // Reserve the full animated bounds; keep labels outside the scaled layer.
+                    Box(Modifier.size(circleSize*1.15f),contentAlignment=Alignment.Center) {
+                        Box(Modifier.size(circleSize).scale(scale).background(Color(0xFF588C88).copy(.4f),CircleShape))
+                        Column(Modifier.width(circleSize).padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                            Text(if(completed) "练习完成" else if(!running) "准备好了吗" else if(step<4) "慢慢吸气" else if(step<6) "轻轻停留" else "缓缓呼气",fontSize=22.sp,lineHeight=28.sp,textAlign=TextAlign.Center,color=Color.White)
+                            Text("%02d:%02d".format(remaining/60,remaining%60),fontSize=18.sp,color=Color.White)
+                        }
+                    }
+                    Text(if(step<4) "让空气自然进入身体，不需要刻意用力" else if(step<6) "放松肩膀，感受这一刻的安静" else "比吸气更慢一点，把紧绷轻轻放下",Modifier.widthIn(max=420.dp).fillMaxWidth().heightIn(min=44.dp),fontSize=14.sp,lineHeight=22.sp,textAlign=TextAlign.Center,color=Color.White.copy(.7f))
+                    Button(onClick={if(remaining==0){remaining=duration;step=0;completed=false};running=!running},modifier=Modifier.widthIn(max=420.dp).fillMaxWidth().heightIn(min=50.dp),shape=RoundedCornerShape(14.dp),colors=ButtonDefaults.buttonColors(containerColor=Color(0xFF0A84FF),contentColor=Color.White)) {
+                        Text(if(running) "暂停练习" else if(remaining<duration && remaining>0) "继续练习" else "开始练习",fontSize=16.sp)
+                    }
+                    if(completed) NoteCard("本次 ${duration/60} 分钟练习已完成，练习时长已保存在本机。")
+                    Text("保持自然舒适的呼吸，感到不适时请停止练习。",Modifier.widthIn(max=420.dp),fontSize=12.sp,lineHeight=18.sp,textAlign=TextAlign.Center,color=Color.White.copy(.6f))
                 }
-                Spacer(Modifier.height(18.dp))
-                Text(if(step<4) "让空气自然进入身体，不需要刻意用力" else if(step<6) "放松肩膀，感受这一刻的安静" else "比吸气更慢一点，把紧绷轻轻放下",fontSize=14.sp,color=Color.White.copy(.7f))
-                Button(onClick={if(remaining==0){remaining=duration;step=0;completed=false};running=!running},modifier=Modifier.fillMaxWidth()){Text(if(running) "暂停练习" else if(remaining<duration && remaining>0) "继续练习" else "开始练习")}
-                if(completed) NoteCard("本次 ${duration/60} 分钟练习已完成，练习时长已保存在本机。")
-                Text("保持自然舒适的呼吸，感到不适时请停止练习。",style=MaterialTheme.typography.bodySmall,textAlign=TextAlign.Center)
             }
         }
     }

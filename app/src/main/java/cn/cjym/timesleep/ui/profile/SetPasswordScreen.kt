@@ -114,14 +114,14 @@ fun SetPasswordScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                             isSendingCode = false
                         }
                     },
-                    modifier = Modifier.width(96.dp),
+                    modifier = Modifier.width(128.dp),
                 ) {
                     if (isSendingCode) {
                         CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                     } else if (countdown > 0) {
                         Text("${countdown}s")
                     } else {
-                        Text("获取验证码")
+                        Text("获取验证码", maxLines = 1)
                     }
                 }
             }

@@ -205,7 +205,7 @@ private fun SleepTopBar(
                 ) {
                     Text(
                         text = title,
-                        fontSize = if(selected) 22.sp else 20.sp,
+                        fontSize = 20.sp,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                         color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     )

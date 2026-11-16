@@ -21,7 +21,7 @@ fun LegalWebViewScreen(type: String, onBack: () -> Unit, modifier: Modifier = Mo
     val url = if (type == "privacy") LegalLinks.PRIVACY_POLICY_URL else LegalLinks.USER_AGREEMENT_URL
 
     Scaffold(
-        topBar = { ProfileTopBar(title = title, onBack = onBack) },
+        topBar = { ProfileTopBar(title = title, onBack = onBack, titleScale = 0.75f) },
         modifier = modifier,
     ) { innerPadding ->
         LegalWebView(url = url, modifier = Modifier.fillMaxSize().padding(innerPadding))

@@ -45,6 +45,13 @@ import androidx.compose.ui.unit.dp
 import cn.cjym.timesleep.LegalLinks
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.AppSDKManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.runtime.withFrameNanos
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -58,18 +65,58 @@ fun AppRoot() {
         app.settings.agreementAccepted.map<Boolean, Boolean?> { it }
     }.collectAsState(initial = null)
 
+    val loginToken by app.settings.accessToken.collectAsState(initial = "")
+    LaunchedEffect(loginToken, agreementAccepted) {
+        cn.cjym.timesleep.service.MembershipAccess.reset()
+        if (agreementAccepted == true && loginToken.isNotBlank()) {
+            try { cn.cjym.timesleep.service.MembershipAccess.refresh(loginToken) }
+            catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (_: Exception) { /* Remain locked until the server confirms entitlement. */ }
+        }
+    }
+    var homeReady by remember(app) { mutableStateOf(false) }
     LaunchedEffect(agreementAccepted) {
         if (agreementAccepted == true) {
+            // JSON and preferences are loaded off the UI thread while the logo stays visible.
+            withContext(Dispatchers.IO) {
+                cn.cjym.timesleep.service.SleepMonitorManager.init(app)
+                app.wellness
+            }
+            homeReady = true
+        } else {
+            homeReady = false
+        }
+    }
+    LaunchedEffect(homeReady, app) {
+        if (homeReady) {
+            withFrameNanos { }
+            withFrameNanos { }
+            withContext(Dispatchers.IO) { app.storyLibrary.load() }
+        }
+    }
+    LaunchedEffect(homeReady) {
+        if (homeReady) {
+            // Let the home screen draw before initializing SDKs used by in-page features.
+            withFrameNanos { }
+            withFrameNanos { }
             AppSDKManager.startIfAllowed(context = context.applicationContext, agreementAccepted = true)
         }
     }
 
-    when (agreementAccepted) {
-        null -> Unit
-        true -> MainTabScreen()
-        false -> Box(modifier = Modifier.fillMaxSize()) {
+    when {
+        agreementAccepted == null || (agreementAccepted == true && !homeReady) -> StartupLogo()
+        agreementAccepted == true -> MainTabScreen()
+        else -> Box(modifier = Modifier.fillMaxSize()) {
             PrivacyAgreementDialog()
         }
+    }
+}
+
+@Composable
+private fun StartupLogo() {
+    Box(Modifier.fillMaxSize().background(Color.Black),contentAlignment=Alignment.Center) {
+        Image(painterResource(cn.cjym.timesleep.R.drawable.launcher_icon),"时光睡眠",
+            Modifier.size(96.dp).clip(RoundedCornerShape(22.dp)))
     }
 }
 

@@ -23,7 +23,12 @@ sealed class AuthException(message: String) : Exception(message) {
 }
 
 @Serializable
-data class AppUserLoginResult(val phone: String, val newUser: Boolean)
+data class AppUserLoginResult(
+    val phone: String, val newUser: Boolean = false,
+    val accessToken: String? = null, val token: String? = null,
+) {
+    val resolvedAccessToken: String get() = accessToken?.takeIf { it.isNotBlank() } ?: token.orEmpty()
+}
 
 @Serializable
 private class EmptyData

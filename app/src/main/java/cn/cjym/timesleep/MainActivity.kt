@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import cn.cjym.timesleep.ui.AppRoot
 import cn.cjym.timesleep.ui.theme.TimeSleepTheme
 
-class MainActivity : ComponentActivity() {
+open class MainActivity : ComponentActivity() {
     var pendingRoute by androidx.compose.runtime.mutableStateOf<String?>(null)
         private set
     fun consumeRoute() { pendingRoute = null }
@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         readRoute(intent)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_TimeSleep)
         super.onCreate(savedInstanceState)
         readRoute(intent)
         enableEdgeToEdge(statusBarStyle = androidx.activity.SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = androidx.activity.SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))

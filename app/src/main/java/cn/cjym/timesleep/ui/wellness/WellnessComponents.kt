@@ -89,7 +89,7 @@ val wellnessFeatures = personalityFeatures + sleepFeatures + relaxFeatures
         Box(Modifier.matchParentSize().background(Brush.horizontalGradient(listOf(Color.Black.copy(alpha=.82f),Color.Black.copy(alpha=.62f),Color.Black.copy(alpha=.20f)))))
         Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(5.dp)) {Icon(Icons.Default.AutoAwesome,null,Modifier.size(16.dp),tint=Color.White);Text("今日灵感",fontSize=15.sp,fontWeight=FontWeight.SemiBold,color=Color.White)}
-            Text(inspiration.quote,Modifier.widthIn(max=480.dp),fontSize=20.sp,lineHeight=29.sp,fontWeight=FontWeight.SemiBold,fontFamily=androidx.compose.ui.text.font.FontFamily.Serif,color=Color.White)
+            Text(inspiration.quote,Modifier.widthIn(max=480.dp),fontSize=18.sp,lineHeight=27.sp,fontWeight=FontWeight.SemiBold,fontFamily=androidx.compose.ui.text.font.FontFamily.Serif,color=Color.White)
             Text("${inspiration.date.monthValue}月${inspiration.date.dayOfMonth}日  ·  ${inspiration.theme}",fontSize=12.sp,color=Color.White.copy(alpha=.74f))
         }
     }

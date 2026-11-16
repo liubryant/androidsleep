@@ -12,6 +12,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 private val Context.settingsDataStore by preferencesDataStore(name = "app_settings")
 
@@ -22,6 +25,9 @@ class AppSettings(private val context: Context) {
         val saveAudioClips = booleanPreferencesKey("settings.saveAudioClips")
         val sensitivity = doublePreferencesKey("settings.sensitivity")
         val agreementAccepted = booleanPreferencesKey("agreement_accepted")
+        val accessToken = stringPreferencesKey("profile.encryptedToken")
+        val pendingOrder = stringPreferencesKey("membership.pendingOrder")
+        val pendingOwner = stringPreferencesKey("membership.pendingOwner")
         val phoneNumber = stringPreferencesKey("profile.phoneNumber")
     }
 
@@ -31,8 +37,28 @@ class AppSettings(private val context: Context) {
     val agreementAccepted: Flow<Boolean> = context.settingsDataStore.data.map { it[Keys.agreementAccepted] ?: false }
     val phoneNumber: Flow<String> = context.settingsDataStore.data.map { it[Keys.phoneNumber] ?: "" }
 
-    suspend fun login(phone: String) {
+    val accessToken: Flow<String> = context.settingsDataStore.data.map {
+        if (it[Keys.isLoggedIn] == true) TokenCipher.decrypt(it[Keys.accessToken].orEmpty()) else ""
+    }.flowOn(kotlinx.coroutines.Dispatchers.IO).distinctUntilChanged()
+    suspend fun pendingOrder(): String? {
+        val prefs = context.settingsDataStore.data.first()
+        return prefs[Keys.pendingOrder]?.takeIf { prefs[Keys.pendingOwner] == prefs[Keys.phoneNumber] }
+    }
+    suspend fun savePendingOrder(id: String, owner: String) {
         context.settingsDataStore.edit { prefs ->
+            if (prefs[Keys.phoneNumber] == owner) {
+                prefs[Keys.pendingOrder] = id
+                prefs[Keys.pendingOwner] = owner
+            }
+        }
+    }
+    suspend fun clearPendingOrder(id: String) {
+        context.settingsDataStore.edit { if (it[Keys.pendingOrder] == id) { it.remove(Keys.pendingOrder); it.remove(Keys.pendingOwner) } }
+    }
+    suspend fun login(phone: String, accessToken: String = "") {
+        val encryptedToken = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { TokenCipher.encrypt(accessToken) }
+        context.settingsDataStore.edit { prefs ->
+            prefs[Keys.accessToken] = encryptedToken
             prefs[Keys.phoneNumber] = phone
             prefs[Keys.isLoggedIn] = true
         }
@@ -40,6 +66,8 @@ class AppSettings(private val context: Context) {
 
     suspend fun logout() {
         context.settingsDataStore.edit { prefs ->
+            prefs.remove(Keys.accessToken)
+            cn.cjym.timesleep.service.MembershipAccess.reset()
             prefs[Keys.isLoggedIn] = false
         }
     }
@@ -47,6 +75,8 @@ class AppSettings(private val context: Context) {
     /** 注销账号后清除登录态与手机号，对应 iOS `AppSettings.clearAccountData()`。 */
     suspend fun clearAccountData() {
         context.settingsDataStore.edit { prefs ->
+            prefs.remove(Keys.accessToken)
+            cn.cjym.timesleep.service.MembershipAccess.reset()
             prefs[Keys.isLoggedIn] = false
             prefs[Keys.phoneNumber] = ""
         }

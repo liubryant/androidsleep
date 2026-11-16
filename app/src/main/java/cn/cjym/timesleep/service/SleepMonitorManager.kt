@@ -83,12 +83,13 @@ object SleepMonitorManager {
     private val _reportTooShort = MutableStateFlow(false)
     val reportTooShort: StateFlow<Boolean> = _reportTooShort.asStateFlow()
 
+    @Synchronized
     fun init(context: Context) {
         if (initialized) return
-        initialized = true
         appContext = context.applicationContext
         _sessions.value = SleepSessionStore.loadSessions(appContext)
         _latestSession.value = _sessions.value.firstOrNull()
+        initialized = true
     }
 
     fun start(context: Context) {

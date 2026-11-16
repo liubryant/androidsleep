@@ -1,5 +1,6 @@
 package cn.cjym.timesleep.service
 
+import android.content.Context
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +12,33 @@ import okhttp3.Request
 internal data class MembershipProduct(val id:String,val name:String,val description:String,val price:String)
 
 internal object MembershipProducts {
-    const val URL = "https://www.cjym123.cn/im/bot/sleep/vip/products"
+    // Shared Android/Harmony catalog, matching AgentClaw and hm.cjym.timesleep.
+    const val URL = "https://www.cjym123.cn/im/bot/navi/vip/products"
     private val client=OkHttpClient.Builder().callTimeout(15,TimeUnit.SECONDS).build()
-    suspend fun load():List<MembershipProduct> = withContext(Dispatchers.IO) {
+    @Volatile private var memoryCache: List<MembershipProduct>? = null
+
+    fun cached(context: Context): List<MembershipProduct> {
+        memoryCache?.let { return it }
+        val saved = runCatching {
+            context.applicationContext.getSharedPreferences("membership_catalog", Context.MODE_PRIVATE)
+                .getString("response_v1", null)?.let { parse(it) }
+        }.getOrNull() ?: emptyList()
+        memoryCache = saved
+        return saved
+    }
+
+    suspend fun load(context: Context):List<MembershipProduct> = withContext(Dispatchers.IO) {
         client.newCall(Request.Builder().url(URL).get().build()).execute().use {response->
             if(!response.isSuccessful) throw IllegalStateException("商品接口 HTTP ${response.code}")
-            parse(response.body?.string() ?: throw IllegalStateException("商品接口返回空响应"))
+            val body = response.body?.string() ?: throw IllegalStateException("商品接口返回空响应")
+            val products = parse(body)
+            // Cache only validated server responses, including an intentionally empty catalog.
+            memoryCache = products
+            runCatching {
+                context.applicationContext.getSharedPreferences("membership_catalog", Context.MODE_PRIVATE)
+                    .edit().putString("response_v1", body).apply()
+            }
+            products
         }
     }
     internal fun parse(body:String):List<MembershipProduct> {
