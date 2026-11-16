@@ -17,7 +17,7 @@ import okhttp3.Request
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-@Serializable data class MeditationTrack(val id: String, val title: String, val subtitle: String, val cover: Int, val asset: String = "", val downloadUrl: String = "", val requiresVIP: Boolean = false)
+@Serializable data class MeditationTrack(val id: String, val title: String, val subtitle: String, val cover: Int, val asset: String = "", val downloadUrl: String = "", val requiresVIP: Boolean = false, val coverAsset: String = "")
 @Serializable data class RemoteMeditation(val id: Int, val title: String, val downloadUrl: String, val sizeBytes: Long? = null)
 @Serializable data class MeditationGroup(val id: Int, val name: String, val description: String? = null, val sortOrder: Int? = null, val items: List<RemoteMeditation>)
 data class MeditationPlayback(val track: MeditationTrack, val playing: Boolean = false, val loading: Boolean = true, val position: Float = 0f, val duration: Float = 0f, val remainingSeconds: Int? = null, val error: String? = null)
@@ -34,12 +34,22 @@ object MeditationLibrary {
         local("quick-sleep", "快速入睡", "正念引导 · 沉入梦乡", 22, "suyue快速入睡｜让意识慢慢沉入夜晚"),
         local("exam-sleep", "考前失眠解放", "正念引导 · 缓解紧张", 13, "nan考前失眠解放｜放下焦虑，安心入眠"))
     val groups = MutableStateFlow<List<Pair<String, List<MeditationTrack>>>>(emptyList())
+    val groupDescriptions = MutableStateFlow<Map<String,String>>(emptyMap())
+    private val natureTracks = mutableMapOf<String,MeditationTrack>()
+    fun natureTrack(scene: cn.cjym.timesleep.data.model.SoundScene): MeditationTrack {
+        val track = MeditationTrack("nature-${scene.id}",scene.title,scene.subtitle.ifBlank { "聆听自然，安然入眠" },1,
+            asset=if(scene.isBundledAudio) scene.audioAssetPath else "",
+            downloadUrl="${cn.cjym.timesleep.AppConstants.SOUND_SERVER_BASE_URL}/${scene.id}/download",
+            requiresVIP=scene.requiresVIP,coverAsset=scene.coverAssetPath)
+        natureTracks[track.id]=track
+        return track
+    }
     val error = MutableStateFlow<String?>(null)
     private val client = OkHttpClient.Builder().callTimeout(30, TimeUnit.SECONDS).build()
     private val json = Json { ignoreUnknownKeys = true }
-    fun find(id: String) = (bundled + groups.value.flatMap { it.second }).firstOrNull { it.id == id }
+    fun find(id: String) = (bundled + groups.value.flatMap { it.second }).firstOrNull { it.id == id } ?: natureTracks[id]
     suspend fun load(context: Context) = withContext(Dispatchers.IO) {
-        if (groups.value.isNotEmpty()) return@withContext
+        if (groups.value.isNotEmpty() && error.value == null) return@withContext
         val cache = File(context.filesDir, "meditation-catalog.json")
         fun request(path: String): String = client.newCall(Request.Builder().url("https://www.cjym123.cn/api/mindfulness$path").build()).execute().use {
             check(it.isSuccessful) { "HTTP ${it.code}" }; it.body!!.string()
@@ -58,10 +68,11 @@ object MeditationLibrary {
         }
     }
     private fun setGroups(items: List<MeditationGroup>) {
+        groupDescriptions.value = items.associate { it.name.trim() to (it.description?.trim()?.takeIf(String::isNotEmpty) ?: "跟随声音，把注意力带回当下") }
         val covers = listOf(2,5,9,10,12,14,15,17,18,19,23,24,25,26,27,30)
         groups.value = items.sortedWith(compareBy<MeditationGroup> { it.sortOrder ?: 0 }.thenBy { it.id }).filter { it.name.isNotBlank() }.map { g ->
-            g.name to g.items.filter { it.title.isNotBlank() && it.downloadUrl.isNotBlank() }.mapIndexed { i, t ->
-                MeditationTrack("remote-${t.id}", t.title, "云端正念 · 下载后离线播放", covers[Math.floorMod(t.id, covers.size)], downloadUrl = t.downloadUrl, requiresVIP = !(g.name.trim() == "冥想小白课程" && i == 0))
+            g.name.trim() to g.items.filter { it.title.isNotBlank() && it.downloadUrl.isNotBlank() }.mapIndexed { i, t ->
+                MeditationTrack("remote-${t.id}", t.title, "云端正念", covers[Math.floorMod(t.id, covers.size)], downloadUrl = t.downloadUrl, requiresVIP = !(g.name.trim() == "冥想小白课程" && i == 0))
             }
         }.filter { it.second.isNotEmpty() }
     }
@@ -82,10 +93,12 @@ object MindfulnessPlayer {
     val downloadProgress = MutableStateFlow<Float?>(null)
     private val client = OkHttpClient.Builder().callTimeout(180, TimeUnit.SECONDS).build()
     fun init(context: Context) { this.context = context.applicationContext }
-    fun play(track: MeditationTrack) {
+    fun play(track: MeditationTrack, preserveTimer: Boolean = false) {
         if (track.requiresVIP && !MembershipAccess.active.value) return
-        if (_state.value?.track?.id == track.id && prepared) return
+        if (_state.value?.track?.id == track.id && prepared) {resume();return}
+        val savedDeadline = if(preserveTimer) deadline else null
         stop(); AudioPlayerManager.stop(); StoryPlayerManager.stop()
+        deadline = savedDeadline
         _state.value = MeditationPlayback(track)
         ContextCompat.startForegroundService(context, Intent(context, MindfulnessService::class.java))
         job = scope.launch {
@@ -145,6 +158,12 @@ object MindfulnessPlayer {
         player?.release(); player = null; prepared = false; deadline = null; resumeOnFocus = false
         if (::context.isInitialized) focusRequest?.let { context.getSystemService(AudioManager::class.java).abandonAudioFocusRequest(it) }
         _state.value = null; downloadProgress.value = null
+    }
+    fun cached(track: MeditationTrack): Boolean = track.asset.isNotBlank() ||
+        File(context.cacheDir,"Mindfulness/${track.id}.audio").let {it.exists() && it.length()>0}
+    suspend fun prepare(track: MeditationTrack) {
+        check(!track.requiresVIP || MembershipAccess.active.value) { "请先开通会员" }
+        resolve(track)
     }
     private suspend fun resolve(track: MeditationTrack): File = withContext(Dispatchers.IO) {
         val dir = File(context.cacheDir, "Mindfulness").apply { mkdirs() }

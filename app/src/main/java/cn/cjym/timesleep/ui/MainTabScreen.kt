@@ -169,8 +169,8 @@ fun MainTabScreen() {
                 if (meditation != null) {
                     meditation?.let { playing ->
                         Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surface.copy(alpha = .98f), modifier = Modifier.clickable { navController.navigate("meditation/${playing.track.id}") }) {
-                            Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                AssetCoverImage("SoundResources/Mindfulness/Covers/cover-%02d.jpg".format(playing.track.cover), Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)))
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                                AssetCoverImage("SoundResources/Mindfulness/Covers/cover-%02d.jpg".format(playing.track.cover), Modifier.size(36.dp).clip(RoundedCornerShape(8.dp)))
                                 Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                                     Text(playing.track.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     Text(playing.remainingSeconds?.let { timeText(it.toFloat()) + " 后暂停" } ?: playing.track.subtitle, style = MaterialTheme.typography.labelSmall)
@@ -220,7 +220,11 @@ private fun MainBottomBar(navController: NavHostController) {
                 horizontalAlignment=Alignment.CenterHorizontally,
                 verticalArrangement=Arrangement.spacedBy(2.dp,Alignment.CenterVertically),
             ) {
-                Icon(tab.icon,null,Modifier.size(22.dp),tint=color)
+                if(tab==MainTab.Stories) {
+                    Icon(androidx.compose.ui.res.painterResource(cn.cjym.timesleep.R.drawable.ic_tab_story),null,Modifier.size(22.dp),tint=color)
+                } else {
+                    Icon(tab.icon,null,Modifier.size(22.dp),tint=color)
+                }
                 Text(tab.label,fontSize=10.sp,lineHeight=12.sp,fontWeight=if(selected) FontWeight.SemiBold else FontWeight.Normal,color=color)
             }
         }
@@ -239,12 +243,12 @@ private fun GlobalStoryMiniPlayer(playing: StoryNowPlaying) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(horizontal = 12.dp, vertical = 4.dp),
         ) {
             AssetCoverImage(
                 assetPath = playing.story.coverAssetPath,
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(36.dp)
                     .clip(RoundedCornerShape(8.dp)),
             )
 
@@ -297,7 +301,7 @@ private fun GlobalMiniPlayer(playing: NowPlaying) {
         color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Box(modifier = Modifier.padding(12.dp)) {
+        Box(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 androidx.compose.foundation.layout.Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -306,7 +310,7 @@ private fun GlobalMiniPlayer(playing: NowPlaying) {
                     AssetCoverImage(
                         assetPath = playing.scene.coverAssetPath,
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(36.dp)
                             .clip(RoundedCornerShape(8.dp)),
                     )
 
@@ -320,19 +324,13 @@ private fun GlobalMiniPlayer(playing: NowPlaying) {
                             overflow = TextOverflow.Ellipsis,
                         )
                         Text(
-                            text = playing.scene.subtitle,
+                            text = playing.sleepTimerText ?: playing.scene.subtitle,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
-                        playing.sleepTimerText?.let { timerText ->
-                            Text(
-                                text = timerText,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
+
                     }
 
                     IconButton(onClick = { AudioPlayerManager.toggle(playing.scene) }) {

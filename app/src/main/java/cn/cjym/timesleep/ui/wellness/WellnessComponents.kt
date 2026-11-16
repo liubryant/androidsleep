@@ -25,9 +25,9 @@ import coil.compose.AsyncImage
 
 fun coverPath(index: Int) = "file:///android_asset/SoundResources/Mindfulness/Covers/cover-%02d.jpg".format(index)
 
-@Composable fun SceneryBackground(cover: Int, modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
+@Composable fun SceneryBackground(cover: Int, modifier: Modifier = Modifier, coverAsset: String = "", content: @Composable BoxScope.() -> Unit) {
     Box(modifier.fillMaxSize().background(Color(0xFF111315))) {
-        AsyncImage(coverPath(cover),null,Modifier.matchParentSize(),contentScale=ContentScale.Crop)
+        AsyncImage(if(coverAsset.isBlank()) coverPath(cover) else "file:///android_asset/$coverAsset",null,Modifier.matchParentSize(),contentScale=ContentScale.Crop)
         Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color.Black.copy(.55f),Color.Black.copy(.82f)))))
         content()
     }
@@ -87,10 +87,10 @@ val wellnessFeatures = personalityFeatures + sleepFeatures + relaxFeatures
     Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).clickable(onClick=onClick)) {
         AsyncImage(coverPath(inspiration.cover),null,Modifier.matchParentSize(),contentScale=ContentScale.Crop,colorFilter=androidx.compose.ui.graphics.ColorFilter.colorMatrix(androidx.compose.ui.graphics.ColorMatrix().apply {setToSaturation(.64f)}))
         Box(Modifier.matchParentSize().background(Brush.horizontalGradient(listOf(Color.Black.copy(alpha=.82f),Color.Black.copy(alpha=.62f),Color.Black.copy(alpha=.20f)))))
-        Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(5.dp)) {Icon(Icons.Default.AutoAwesome,null,Modifier.size(16.dp),tint=Color.White);Text("今日灵感",fontSize=15.sp,fontWeight=FontWeight.SemiBold,color=Color.White)}
-            Text(inspiration.quote,Modifier.widthIn(max=480.dp),fontSize=18.sp,lineHeight=27.sp,fontWeight=FontWeight.SemiBold,fontFamily=androidx.compose.ui.text.font.FontFamily.Serif,color=Color.White)
-            Text("${inspiration.date.monthValue}月${inspiration.date.dayOfMonth}日  ·  ${inspiration.theme}",fontSize=12.sp,color=Color.White.copy(alpha=.74f))
+        Column(Modifier.fillMaxWidth().padding(horizontal=20.dp,vertical=21.5.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(5.dp)) {Icon(Icons.Default.AutoAwesome,null,Modifier.size(16.dp),tint=Color.White);Text("今日灵感",fontSize=13.sp,lineHeight=18.sp,fontWeight=FontWeight.SemiBold,color=Color.White)}
+            Text(inspiration.quote,Modifier.widthIn(max=480.dp),fontSize=16.sp,lineHeight=22.sp,fontWeight=FontWeight.SemiBold,fontFamily=androidx.compose.ui.text.font.FontFamily.Serif,color=Color.White)
+            Text("${inspiration.date.monthValue}月${inspiration.date.dayOfMonth}日  ·  ${inspiration.theme}",fontSize=10.sp,lineHeight=14.sp,color=Color.White.copy(alpha=.74f))
         }
     }
 }

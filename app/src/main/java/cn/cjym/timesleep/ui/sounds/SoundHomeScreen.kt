@@ -83,19 +83,19 @@ internal fun homeGreeting(hour:Int):String = when(hour) {
         }
         Box(Modifier.widthIn(max=1100.dp).fillMaxWidth().padding(start=16.dp,end=16.dp,bottom=12.dp)) {
             BasicTextField(value=search,onValueChange={search=it},singleLine=true,
-                textStyle=MaterialTheme.typography.bodyMedium.copy(fontSize=15.sp,color=Color.White),cursorBrush=SolidColor(Color.White),
+                textStyle=MaterialTheme.typography.bodyMedium.copy(fontSize=13.sp,color=Color.White),cursorBrush=SolidColor(Color.White),
                 keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),keyboardActions=KeyboardActions(onSearch={focus.clearFocus();scope.launch {listState.animateScrollToItem(0)}}),
-                modifier=Modifier.fillMaxWidth().height(40.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF1C1C1E)),
+                modifier=Modifier.fillMaxWidth().height(36.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF1C1C1E)),
                 decorationBox={inner->Row(Modifier.fillMaxSize().padding(horizontal=12.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Search,null,Modifier.size(20.dp),tint=Color(0xFFA6A6A6))
-                    Box(Modifier.weight(1f)) {if(search.isEmpty()) Text("搜索雨声、森林、海浪",fontSize=15.sp,color=Color(0xFF8E8E93));inner()}
-                    if(search.isNotEmpty()) IconButton(onClick={search=""},modifier=Modifier.size(24.dp)) {Icon(Icons.Default.Cancel,"清除搜索",Modifier.size(18.dp),tint=Color.Gray)}
+                    Icon(Icons.Default.Search,null,Modifier.size(width=20.dp,height=24.dp),tint=Color(0xFFA6A6A6))
+                    Box(Modifier.weight(1f)) {if(search.isEmpty()) Text("搜索雨声、森林、海浪",fontSize=13.sp,color=Color(0xFF8E8E93));inner()}
+                    if(search.isNotEmpty()) IconButton(onClick={search=""},modifier=Modifier.size(width=24.dp,height=36.dp)) {Icon(Icons.Default.Cancel,"清除搜索",Modifier.size(18.dp),tint=Color.Gray)}
                 }})
         }
         LazyColumn(state=listState,modifier=Modifier.widthIn(max=1100.dp).fillMaxWidth().weight(1f),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=if(audio!=null || story!=null || meditation!=null) 96.dp else 16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             if(isHome) {
                 item("inspiration") {DailyInspirationCard(app.wellness.inspiration(app.wellness.today())) {navigate("inspiration")}}
-                item("mindfulness") {Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                item("mindfulness") {Column(verticalArrangement=Arrangement.spacedBy(14.dp)) {
                     HomeSectionHeading("正念冥想","跟随声音，把注意力带回当下","更多") {navigate("meditations")}
                     MeditationRow(MeditationLibrary.bundled.take(6),navigate)
                 }}

@@ -150,6 +150,13 @@ fun StoryPlayerScreen(
                     .background(Color.Black.copy(alpha=.16f)),
             )
 
+            Column(
+                Modifier.padding(horizontal=if(narrow) 16.dp else 24.dp).padding(bottom=12.dp)
+                    .clip(RoundedCornerShape(24.dp)).background(Color.Black.copy(alpha=.18f))
+                    .border(1.dp,Color.White.copy(alpha=.16f),RoundedCornerShape(24.dp)).padding(18.dp),
+                horizontalAlignment=Alignment.CenterHorizontally,
+                verticalArrangement=Arrangement.spacedBy(14.dp),
+            ) {
             StoryControls(
                 story = story,
                 storyText = storyText.ifBlank { "暂无故事正文" },
@@ -157,18 +164,23 @@ fun StoryPlayerScreen(
                 isPlaying = isPlayingThis,
                 currentTime = if (isCurrent) nowPlaying?.currentTime ?: 0.0 else 0.0,
                 duration = if (isCurrent) nowPlaying?.duration ?: 0.0 else 0.0,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = if (narrow) 16.dp else 24.dp)
-                    .padding(bottom = if (compact) 4.dp else 12.dp),
+                modifier = Modifier.fillMaxWidth(),
             )
-            Row(horizontalArrangement=Arrangement.spacedBy(10.dp),modifier=Modifier.padding(bottom=12.dp)) {
+            if(isCurrent && nowPlaying?.isSpeechMode==true) Text("正在使用系统语音朗读本地故事文本",fontSize=12.sp,color=Color.White.copy(alpha=.58f))
+            Row(horizontalArrangement=Arrangement.spacedBy(10.dp),modifier=Modifier.fillMaxWidth()) {
                 listOf(false,true).forEach {random->
-                    Surface(onClick={randomOrder=random;playbackPrefs.edit().putBoolean("random",random).apply()},shape=RoundedCornerShape(24.dp),color=Color.White.copy(alpha=if(randomOrder==random) .22f else .09f)) {
-                        Row(Modifier.padding(horizontal=14.dp,vertical=10.dp),horizontalArrangement=Arrangement.spacedBy(6.dp)) {Icon(if(random) Icons.Default.Shuffle else Icons.Default.Repeat,null,Modifier.size(18.dp),tint=Color.White);Text(if(random) "随机播放" else "顺序播放",fontSize=14.sp,color=Color.White)}
+                    val chosen=randomOrder==random
+                    val tint=if(chosen) Color.Black.copy(alpha=.86f) else Color.White.copy(alpha=.82f)
+                    Surface(onClick={randomOrder=random;playbackPrefs.edit().putBoolean("random",random).apply()},modifier=Modifier.weight(1f),shape=CircleShape,color=if(chosen) Color.White else Color.White.copy(alpha=.18f)) {
+                        Row(Modifier.height(38.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp,Alignment.CenterHorizontally)) {
+                            Icon(if(random) Icons.Default.Shuffle else Icons.Default.Repeat,null,Modifier.size(16.dp),tint=tint)
+                            Text(if(random) "随机播放" else "顺序播放",fontSize=13.sp,fontWeight=FontWeight.SemiBold,color=tint,maxLines=1)
+                        }
                     }
                 }
             }
+            }
+
         }
 
 
@@ -196,7 +208,7 @@ private fun RotatingStoryCover(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
+            .background(Color.Black.copy(alpha = 0.06f)),
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -209,7 +221,8 @@ private fun RotatingStoryCover(
                 assetPath = story.coverAssetPath,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(CircleShape),
+                    .clip(CircleShape)
+                    .border(5.dp, Color.White, CircleShape),
                 placeholderIcon = Icons.Outlined.AutoStories,
             )
             Box(
@@ -230,7 +243,7 @@ private fun RotatingStoryCover(
             modifier = Modifier
                 .size(14.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
+                .background(Color.White),
         )
     }
 }
@@ -271,19 +284,20 @@ private fun StoryPlaybackText(
             Text(
                 text = chunk,
                 style = MaterialTheme.typography.bodyLarge,
-                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.15,
-                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 17.sp,
+                lineHeight = 24.sp,
+                color = Color.White.copy(alpha=.94f),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(7.dp))
                     .background(
                         if (highlighted) {
-                            MaterialTheme.colorScheme.primary.copy(alpha = if (index == activeIndex) 0.18f else 0.10f)
+                            Color(0xFFADCCFF).copy(alpha = if (index == activeIndex) 0.22f else 0.10f)
                         } else {
                             androidx.compose.ui.graphics.Color.Transparent
                         },
                     )
-                    .padding(horizontal = if (highlighted) 8.dp else 0.dp, vertical = if (highlighted) 5.dp else 0.dp),
+                    .padding(horizontal = 8.dp, vertical = if (highlighted) 5.dp else 0.dp),
             )
         }
     }
@@ -338,9 +352,9 @@ private fun StoryControls(
         }
 
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceEvenly,verticalAlignment=Alignment.CenterVertically) {
-            TextButton(onClick={StoryPlayerManager.seek((currentTime-15).coerceAtLeast(0.0))}) {Text("↶ 15",fontSize=22.sp,color=Color.White)}
+            IconButton(onClick={StoryPlayerManager.seek((currentTime-15).coerceAtLeast(0.0))}) {Box(contentAlignment=Alignment.Center) { Icon(Icons.Default.Replay,"后退15秒",Modifier.size(32.dp),tint=Color.White); Text("15",fontSize=10.sp,color=Color.White) }}
             FilledIconButton(onClick={StoryPlayerManager.toggle(story,storyText)},modifier=Modifier.size(72.dp),colors=IconButtonDefaults.filledIconButtonColors(containerColor=Color.White,contentColor=Color.Black)) {Icon(if(isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,if(isPlaying) "暂停" else "播放",Modifier.size(30.dp))}
-            TextButton(onClick={StoryPlayerManager.seek((currentTime+15).coerceAtMost(duration))}) {Text("15 ↷",fontSize=22.sp,color=Color.White)}
+            IconButton(onClick={StoryPlayerManager.seek((currentTime+15).coerceAtMost(duration))}) {Box(contentAlignment=Alignment.Center) { Icon(Icons.Default.Replay,"前进15秒",Modifier.size(32.dp).graphicsLayer { scaleX = -1f },tint=Color.White); Text("15",fontSize=10.sp,color=Color.White) }}
         }
 
     }
