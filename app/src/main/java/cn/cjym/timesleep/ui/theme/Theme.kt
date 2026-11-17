@@ -9,10 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val LightColors = lightColorScheme(
-    primary = Indigo,
-    onPrimary = DarkBackground,
+    primary = NavigationBlue,
+    onPrimary = Color.White,
     secondary = IndigoLight,
     background = LightBackground,
     surface = LightSurface,
@@ -20,8 +21,8 @@ private val LightColors = lightColorScheme(
 )
 
 private val DarkColors = darkColorScheme(
-    primary = IndigoLight,
-    onPrimary = DarkBackground,
+    primary = NavigationBlue,
+    onPrimary = Color.White,
     secondary = IndigoDark,
     onBackground = androidx.compose.ui.graphics.Color.White,
     onSurface = androidx.compose.ui.graphics.Color.White,

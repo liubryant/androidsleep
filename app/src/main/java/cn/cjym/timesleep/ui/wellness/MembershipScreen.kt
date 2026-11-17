@@ -42,6 +42,7 @@ import cn.cjym.timesleep.ui.profile.LegalWebViewScreen
     val phone by app.settings.phoneNumber.collectAsState(initial = "")
     val token by app.settings.accessToken.collectAsState(initial = "")
     val memberActive by MembershipAccess.active.collectAsState()
+    val memberStatus by MembershipAccess.status.collectAsState()
     var page by rememberSaveable { mutableStateOf("") }
     var selected by rememberSaveable { mutableIntStateOf(0) }
     var accepted by rememberSaveable { mutableStateOf(false) }
@@ -168,6 +169,11 @@ import cn.cjym.timesleep.ui.profile.LegalWebViewScreen
     }, update = { root ->
         (root.tag as MemberViewController).render(products, loading, loadError, selected)
         root.findViewById<TextView>(R.id.vip_phone).text = if (loggedIn) (if (phone.length >= 7) phone.take(3) + "****" + phone.takeLast(4) else phone) else "登录后开通会员"
+        root.findViewById<TextView>(R.id.vip_member_subtitle).text =
+            if (loggedIn && memberStatus?.active == true) {
+                memberStatus?.expiryDateLabel
+                    ?.let { "会员已开通 · 有效期至 $it" } ?: "会员已开通"
+            } else root.resources.getString(R.string.vip_member_subtitle)
         root.findViewById<View>(R.id.vip_login_button).visibility = if (loggedIn && token.isNotBlank()) View.GONE else View.VISIBLE
         root.findViewById<View>(R.id.vip_agreement_check).apply { isSelected = accepted; contentDescription = if (accepted) "已同意协议" else "同意协议" }
         root.findViewById<View>(R.id.vip_pay_button).apply {

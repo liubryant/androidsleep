@@ -73,6 +73,7 @@ import cn.cjym.timesleep.ui.sleep.SleepHomeScreen
 import cn.cjym.timesleep.ui.sounds.SoundHomeScreen
 import cn.cjym.timesleep.ui.stories.StoryHomeScreen
 import cn.cjym.timesleep.ui.stories.StoryPlayerScreen
+import cn.cjym.timesleep.ui.theme.NavigationBlue
 
 internal enum class MainTab(
     val route: String,
@@ -157,8 +158,9 @@ fun MainTabScreen() {
                 composable("membership") { MembershipScreen { navController.popBackStack() } }
             }
 
-            AnimatedVisibility(
-                visible = (topLevel || route == "meditations") && (storyPlaying != null || nowPlaying != null || meditation != null),
+            // Remove the overlay immediately when navigating to a full-screen player.
+            if (topLevel) AnimatedVisibility(
+                visible = storyPlaying != null || nowPlaying != null || meditation != null,
                 enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
                 modifier = Modifier
@@ -205,7 +207,7 @@ private fun MainBottomBar(navController: NavHostController) {
     ) {
         MainTab.entries.forEach {tab ->
             val selected=currentDestination?.hierarchy?.any {it.route==tab.route}==true || (tab==MainTab.Stories && currentRoute==StoryRoutes.Detail)
-            val color by animateColorAsState(if(selected) Color(0xFF0A84FF) else Color(0xFF979AA3),label="tabTint")
+            val color by animateColorAsState(if(selected) NavigationBlue else Color(0xFF979AA3),label="tabTint")
             val background by animateColorAsState(if(selected) Color(0xFF333336) else Color.Transparent,label="tabBackground")
             Column(
                 Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(20.dp))

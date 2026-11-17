@@ -10,8 +10,10 @@ object AppConstants {
     const val AUTH_BASE_URL = "https://www.cjym123.cn"
 
     // 穿山甲 / GroMore
-    const val PANGLE_APP_ID = "5839173"
-    const val SPLASH_SLOT_ID = "104134551"
+    const val PANGLE_APP_ID = "5934303"
+    const val SPLASH_SLOT_ID = "104867873"
+    // The new GroMore app has only been assigned a splash placement.
+    const val DRAW_FEED_ENABLED = false
     const val DRAW_FEED_SLOT_ID = "104134653"
     const val REWARDED_VIDEO_SLOT_ID = "104134740"
     var isAdDisabled = false

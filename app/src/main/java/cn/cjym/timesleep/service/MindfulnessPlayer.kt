@@ -198,6 +198,8 @@ object MindfulnessPlayer {
 object MembershipAccess {
     private val mutableActive = MutableStateFlow(false)
     val active: StateFlow<Boolean> = mutableActive.asStateFlow()
+    private val mutableStatus = MutableStateFlow<MemberStatus?>(null)
+    internal val status = mutableStatus.asStateFlow()
     private var currentToken = ""
     private var generation = 0
     private var requestCounter = 0
@@ -206,6 +208,7 @@ object MembershipAccess {
     private val entitlementScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
     @Synchronized fun reset() {
         generation++; currentToken = ""; mutableActive.value = false
+        mutableStatus.value = null
         expiryJob?.cancel(); expiryJob = null; expiryDeadline = null
     }
     suspend fun refresh(token: String): Boolean {
@@ -217,18 +220,23 @@ object MembershipAccess {
         val result = MembershipPayment.membership(token)
         synchronized(this) {
             if (generation == requestGeneration && currentToken == token && requestId == requestCounter) {
-                mutableActive.value = result.active
                 expiryJob?.cancel()
                 val expires = runCatching {
                     java.time.LocalDateTime.parse(result.expiresAt,
                         java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                         .atZone(java.time.ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli()
                 }.getOrNull()
+                val effective = result.copy(active = result.active && (expires == null || expires > System.currentTimeMillis()))
+                mutableActive.value = effective.active
+                mutableStatus.value = effective
                 expiryDeadline = expires
-                if (result.active && expires != null) expiryJob = entitlementScope.launch {
+                if (effective.active && expires != null) expiryJob = entitlementScope.launch {
                     kotlinx.coroutines.delay((expires - System.currentTimeMillis()).coerceAtLeast(0))
                     synchronized(this@MembershipAccess) {
-                        if (generation == requestGeneration && expiryDeadline == expires) mutableActive.value = false
+                        if (generation == requestGeneration && expiryDeadline == expires) {
+                            mutableActive.value = false
+                            mutableStatus.value = effective.copy(active = false)
+                        }
                     }
                 }
             }

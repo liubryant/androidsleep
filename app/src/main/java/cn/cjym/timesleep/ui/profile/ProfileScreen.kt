@@ -298,6 +298,7 @@ private fun ProfileHeader(
 }
 
 @Composable private fun MembershipCard(onClick: () -> Unit) {
+    val memberStatus by cn.cjym.timesleep.service.MembershipAccess.status.collectAsState()
     val gold = Color(0xFFEECC9A)
     Column(
         Modifier.fillMaxWidth().heightIn(min = 116.dp).clip(RoundedCornerShape(24.dp))
@@ -312,7 +313,11 @@ private fun ProfileHeader(
             ) { Text("✦", fontSize = 22.sp, color = Color(0xFF4B2A12)) }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("时光睡眠会员", fontSize = 16.sp, lineHeight = 21.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFFFF2D2))
-                Text("开通会员，解锁全部正念内容", fontSize = 11.sp, lineHeight = 16.sp, color = gold)
+                val subtitle = if (memberStatus?.active == true) {
+                    memberStatus?.expiryDateLabel
+                        ?.let { "有效期至 $it" } ?: "会员已开通"
+                } else "开通会员，解锁全部正念内容"
+                Text(subtitle, fontSize = 11.sp, lineHeight = 16.sp, color = gold)
             }
             Text(
                 "查看权益", Modifier.clip(RoundedCornerShape(16.dp)).background(gold)

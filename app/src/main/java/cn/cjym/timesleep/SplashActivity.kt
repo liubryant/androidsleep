@@ -1,6 +1,4 @@
 package cn.cjym.timesleep
 
-/** Launcher keeps its existing component name, but renders the app in the same window.
- * There is no splash ad request or second Activity transition during launch.
- */
+/** Launcher renders the consent, splash ad and home in the same window. */
 class SplashActivity : MainActivity()

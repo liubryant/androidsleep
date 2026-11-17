@@ -45,7 +45,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DrawFeedAdCard(modifier: Modifier = Modifier) {
-    if (AppConstants.isAdDisabled) return
+    if (AppConstants.isAdDisabled || !AppConstants.DRAW_FEED_ENABLED) return
 
     val context = LocalContext.current
     val mainHandler = remember { Handler(Looper.getMainLooper()) }

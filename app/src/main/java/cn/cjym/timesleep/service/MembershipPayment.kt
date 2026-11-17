@@ -11,7 +11,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType.Companion.toMediaType
 import java.util.concurrent.TimeUnit
 
-internal data class MemberStatus(val active: Boolean, val expiresAt: String)
+internal data class MemberStatus(val active: Boolean, val expiresAt: String) {
+    val expiryDateLabel: String?
+        get() = runCatching { java.time.LocalDate.parse(expiresAt.take(10)) }.getOrNull()
+            ?.let { "${it.year}年${it.monthValue}月${it.dayOfMonth}日" }
+}
 internal data class MemberOrder(val id: String, val orderString: String, val status: String)
 internal class MembershipAuthException : IllegalStateException("登录已过期，请重新登录")
 

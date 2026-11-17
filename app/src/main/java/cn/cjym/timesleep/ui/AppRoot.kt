@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,9 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import cn.cjym.timesleep.LegalLinks
+import cn.cjym.timesleep.SplashActivity
 import cn.cjym.timesleep.TimeSleepApp
 import cn.cjym.timesleep.service.AppSDKManager
+import cn.cjym.timesleep.service.PangleSplashAdManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.Image
@@ -75,6 +79,8 @@ fun AppRoot() {
         }
     }
     var homeReady by remember(app) { mutableStateOf(false) }
+    val launcher = context as? SplashActivity
+    var splashFinished by remember(launcher) { mutableStateOf(launcher == null) }
     LaunchedEffect(agreementAccepted) {
         if (agreementAccepted == true) {
             // JSON and preferences are loaded off the UI thread while the logo stays visible.
@@ -94,21 +100,38 @@ fun AppRoot() {
             withContext(Dispatchers.IO) { app.storyLibrary.load() }
         }
     }
-    LaunchedEffect(homeReady) {
-        if (homeReady) {
-            // Let the home screen draw before initializing SDKs used by in-page features.
-            withFrameNanos { }
-            withFrameNanos { }
+    LaunchedEffect(agreementAccepted, splashFinished) {
+        if (agreementAccepted == true && splashFinished) {
             AppSDKManager.startIfAllowed(context = context.applicationContext, agreementAccepted = true)
         }
     }
 
     when {
-        agreementAccepted == null || (agreementAccepted == true && !homeReady) -> StartupLogo()
+        agreementAccepted == null -> StartupLogo()
+        agreementAccepted == true && !splashFinished && launcher != null ->
+            StartupAd(launcher) { splashFinished = true }
+        agreementAccepted == true && !homeReady -> StartupLogo()
         agreementAccepted == true -> MainTabScreen()
         else -> Box(modifier = Modifier.fillMaxSize()) {
             PrivacyAgreementDialog()
         }
+    }
+}
+
+@Composable
+private fun StartupAd(activity: SplashActivity, onFinish: () -> Unit) {
+    val attempt = remember(activity) { PangleSplashAdManager.Attempt(activity, onFinish) }
+    DisposableEffect(attempt) { onDispose { attempt.dispose() } }
+    Box(Modifier.fillMaxSize()) {
+        StartupLogo()
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = {
+                android.widget.FrameLayout(activity).also { container ->
+                    container.post { attempt.start(container) }
+                }
+            },
+        )
     }
 }
 
@@ -177,7 +200,7 @@ private fun PrivacyAgreementDialog() {
                     }
 
                     Text(
-                        text = "在您点击\"同意并继续\"前，我们不会主动请求麦克风等敏感权限，也不会开始睡眠声音监测。",
+                        text = "在您勾选并点击\"同意并继续\"前，我们不会初始化广告或统计 SDK、主动请求麦克风等敏感权限，也不会开始睡眠声音监测。",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 12.dp),
                     )
@@ -265,5 +288,9 @@ private fun PrivacyAgreementDialog() {
 }
 
 private fun openUrl(context: android.content.Context, url: String) {
-    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    } catch (_: android.content.ActivityNotFoundException) {
+        android.widget.Toast.makeText(context, "暂时无法打开链接，请安装浏览器后重试", android.widget.Toast.LENGTH_SHORT).show()
+    }
 }

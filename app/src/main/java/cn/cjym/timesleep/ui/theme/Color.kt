@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 val Indigo = Color(0xFF4876FF)
 val IndigoLight = Color(0xFF7EA0FF)
 val IndigoDark = Color(0xFF214FD6)
+val NavigationBlue = Color(0xFF0A84FF)
 
 val LightBackground = Color(0xFFF2F2F7)
 val LightSurface = Color(0xFFFFFFFF)

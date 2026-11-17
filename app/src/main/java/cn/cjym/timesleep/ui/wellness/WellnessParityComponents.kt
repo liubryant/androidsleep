@@ -17,11 +17,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import cn.cjym.timesleep.R
 
 val WellnessFeature.badge: String get() = when(id) {
     "mbti"->"36 道题";"mood"->"约 1 分钟";"anxiety"->"7 道题";"stress","sleepHealth"->"8 道题"
@@ -63,7 +65,12 @@ val WellnessFeature.accent: Color get() = when(id) {
         Column(Modifier.fillMaxSize().padding(15.dp)) {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
                 Box(Modifier.height(23.dp).clip(CircleShape).background(Color.Black.copy(alpha=.32f)).padding(horizontal=9.dp),contentAlignment=Alignment.Center) {Text(feature.badge,fontSize=10.sp,fontWeight=FontWeight.Medium,color=Color.White)}
-                Spacer(Modifier.weight(1f));Icon(feature.symbol,null,Modifier.size(27.dp),tint=Color.White.copy(alpha=.9f))
+                Spacer(Modifier.weight(1f))
+                if (feature.id == "mbti") {
+                    Icon(painterResource(R.drawable.ic_mbti_people_wave), null, Modifier.size(27.dp), tint = Color.White.copy(alpha = .9f))
+                } else {
+                    Icon(feature.symbol, null, Modifier.size(27.dp), tint = Color.White.copy(alpha = .9f))
+                }
             }
             Spacer(Modifier.weight(1f))
             Text(feature.title,fontSize=17.sp,lineHeight=21.sp,fontWeight=FontWeight.SemiBold,color=Color.White)

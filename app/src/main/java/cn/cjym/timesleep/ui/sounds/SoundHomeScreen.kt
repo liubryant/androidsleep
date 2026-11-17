@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
+import cn.cjym.timesleep.R
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -71,13 +73,16 @@ internal fun homeGreeting(hour:Int):String = when(hour) {
                 Text(homeGreeting(hour),fontSize=if(maxWidth<200.dp) 16.sp else 20.sp,fontWeight=FontWeight.Bold,color=Color.White,maxLines=1)
             }
             Box {
-                IconButton(onClick={menu=true},modifier=Modifier.size(44.dp)) {Icon(Icons.Default.Tune,"声音筛选与定时",Modifier.size(23.dp),tint=Color.White)}
+                IconButton(onClick={menu=true},modifier=Modifier.size(44.dp)) {
+                    Icon(painterResource(R.drawable.ic_sound_filter_sliders), "声音筛选与定时", Modifier.size(19.dp), tint=Color.White)
+                }
                 DropdownMenu(menu,{menu=false}) {
-                    DropdownMenuItem({Text("显示全部声音")},{category="全部";search="";menu=false})
-                    DropdownMenuItem({Text("显示收藏")},{category="收藏";menu=false})
-                    DropdownMenuItem({Text("返回首页")},{category="首页";search="";menu=false})
+                    DropdownMenuItem({Text("全部")},{category="全部";search="";menu=false})
+                    DropdownMenuItem({Text("收藏")},{category="收藏";search="";menu=false})
+                    if (category != "首页") DropdownMenuItem({Text("返回首页")},{category="首页";search="";menu=false})
+                    HorizontalDivider()
                     listOf(15,30,60).forEach { m->DropdownMenuItem({Text("$m 分钟后停止")},{AudioPlayerManager.setSleepTimer(m);menu=false}) }
-                    DropdownMenuItem({Text("取消定时")},{AudioPlayerManager.cancelSleepTimer();menu=false})
+                    DropdownMenuItem({Text("取消定时", color=MaterialTheme.colorScheme.error)},{AudioPlayerManager.cancelSleepTimer();menu=false})
                 }
             }
         }

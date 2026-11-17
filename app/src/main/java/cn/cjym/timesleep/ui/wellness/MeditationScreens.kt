@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -66,7 +69,6 @@ import kotlinx.coroutines.launch
     var pendingTrack by remember { mutableStateOf<String?>(null) }
     var downloadMessage by remember { mutableStateOf<String?>(null) }
     val scenes by app.soundLibrary.scenes.collectAsState()
-    var banner by rememberSaveable {mutableIntStateOf(0)}
     var locked by remember {mutableStateOf<String?>(null)}
     val scope=rememberCoroutineScope()
     fun openTrack(track: MeditationTrack) {
@@ -85,14 +87,22 @@ import kotlinx.coroutines.launch
         }
     }
     LaunchedEffect(Unit) {MeditationLibrary.load(context);app.soundLibrary.load()}
-    LaunchedEffect(Unit) {while(true) {delay(3000);banner=(banner+1)%3}}
     val titles=listOf("正念，是温柔地回到此刻","从一次自然呼吸开始","走神了，也完全没关系")
     val details=listOf("不评判此刻的感受，只是留意呼吸、身体与正在发生的一切。","找一个舒服的姿势，闭上眼睛，跟随声音，把注意力放在呼吸上。","发现思绪飘走时，不必责备自己，轻轻觉察，再慢慢回到当下。")
     val colors=listOf(listOf(Color(0xFF1A575C),Color(0xFF599482)),listOf(Color(0xFF40457A),Color(0xFF7D7AB3)),listOf(Color(0xFF6B4A33),Color(0xFFB08257)))
+    val pager = rememberPagerState { titles.size }
+    val dragging by pager.interactionSource.collectIsDraggedAsState()
+    LaunchedEffect(pager, pager.settledPage, dragging) {
+        if (!dragging) {
+            delay(3000)
+            if (!pager.isScrollInProgress) pager.animateScrollToPage((pager.settledPage + 1) % titles.size)
+        }
+    }
     Column(Modifier.fillMaxSize().background(Color.Black)) {
         WellnessTopBar("自在正念",back)
         LazyColumn(contentPadding=PaddingValues(bottom=34.dp),verticalArrangement=Arrangement.spacedBy(28.dp)) {
             item {Column(Modifier.padding(horizontal=20.dp).padding(top=8.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                HorizontalPager(state = pager, modifier = Modifier.fillMaxWidth()) { banner ->
                 BoxWithConstraints(Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).background(androidx.compose.ui.graphics.Brush.linearGradient(colors[banner]))) {
                     val presenterWidth = (maxWidth * .28f).coerceAtMost(110.dp)
                     Column(
@@ -105,7 +115,15 @@ import kotlinx.coroutines.launch
                     }
                     AsyncImage("file:///android_asset/mindfulness_presenter.png",null,Modifier.align(Alignment.BottomEnd).width(presenterWidth).height(140.dp),contentScale=ContentScale.Fit)
                 }
-                Row(horizontalArrangement=Arrangement.spacedBy(7.dp)) {repeat(3) {index->Box(Modifier.width(if(index==banner) 20.dp else 7.dp).height(7.dp).clip(CircleShape).background(Color.White.copy(alpha=if(index==banner) .72f else .16f)).clickable {banner=index})}}
+                }
+                Row(horizontalArrangement=Arrangement.spacedBy(7.dp)) {
+                    titles.indices.forEach { index ->
+                        val selected = index == pager.currentPage
+                        Box(Modifier.width(if (selected) 20.dp else 7.dp).height(7.dp).clip(CircleShape)
+                            .background(Color.White.copy(alpha = if (selected) .72f else .16f))
+                            .clickable { scope.launch { pager.animateScrollToPage(index) } })
+                    }
+                }
             }}
             val displayGroups=listOf("正念冥想" to (MeditationLibrary.bundled+groups.filter {it.first.trim()=="正念冥想"}.flatMap {it.second}))+groups.filter {it.first.trim()!="正念冥想"}
             displayGroups.forEachIndexed {index,group->item {Column(verticalArrangement=Arrangement.spacedBy(14.dp)) {
@@ -152,19 +170,21 @@ import kotlinx.coroutines.launch
     var seeking by remember {mutableStateOf(false)}
     var seek by remember {mutableFloatStateOf(0f)}
     var history by rememberSaveable {mutableStateOf(listOf<String>())}
-    LaunchedEffect(id,initial) {if(initial!=null && (!initial.requiresVIP || active)) MindfulnessPlayer.play(initial)}
+    var selectedTrack by remember(id) { mutableStateOf<MeditationTrack?>(null) }
+    val canPlay = initial != null && (!initial.requiresVIP || active)
+    LaunchedEffect(id, canPlay) { if (canPlay && initial != null) MindfulnessPlayer.play(initial) }
     if(initial==null) {Column {WellnessTopBar("正念冥想",back);NoteCard("内容尚未加载，请返回列表重试。")};return}
     if(initial.requiresVIP && !active) {
         SceneryBackground(initial.cover) {Column {WellnessTopBar(initial.title,back);Column(Modifier.padding(24.dp),verticalArrangement=Arrangement.spacedBy(22.dp)){Text("这段练习属于会员内容",style=MaterialTheme.typography.headlineSmall);Text(initial.subtitle);Button(onClick={navigate("membership")}){Text("查看会员权益")};OutlinedButton(onClick={navigate("meditation/deep-sleep-healing")}){Text("先体验免费练习")}}}};return
     }
-    val track=state?.track ?: initial
-    val playback=state
+    val track = selectedTrack ?: initial
+    val playback = state?.takeIf { it.track.id == track.id }
     val transition=rememberInfiniteTransition(label="breathe")
     val scale by transition.animateFloat(.9f,1.06f,infiniteRepeatable(tween(4000,easing=FastOutSlowInEasing),RepeatMode.Reverse),label="artwork")
     fun switchTrack(previous:Boolean) {
         val candidates=(MeditationLibrary.bundled+groups.flatMap {it.second}).filter{(!it.requiresVIP||active)&&it.id!=track.id}
         val next=if(previous) history.lastOrNull()?.let(MeditationLibrary::find) else candidates.randomOrNull()
-        if(next!=null){if(previous) history=history.dropLast(1) else history=history+track.id;MindfulnessPlayer.play(next,preserveTimer=true)}
+        if(next!=null){if(previous) history=history.dropLast(1) else history=history+track.id;selectedTrack=next;MindfulnessPlayer.play(next,preserveTimer=true)}
     }
     SceneryBackground(track.cover,coverAsset=track.coverAsset) {
         Column(Modifier.fillMaxSize()) {
